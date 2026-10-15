@@ -354,7 +354,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
         >
           <div className="flex items-start gap-3.5">
             <MediaImage
-              src={profile.avatar || '/images/lincent-logo.svg'}
+              src={profile.avatar || '/favicon.svg'}
               variant="thumb"
               alt="lincent"
               className="w-10 h-10 object-cover rounded-xl shrink-0 mt-0.5"

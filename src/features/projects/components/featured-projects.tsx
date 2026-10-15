@@ -73,8 +73,8 @@ export const FeaturedProjects: React.FC = () => {
     <section id="projects" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto overflow-hidden">
       {/* Section Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 max-w-6xl mx-auto">
-        <div className="space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs">
+        <div className="space-y-3 min-w-0 max-w-3xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs whitespace-nowrap">
             <span>{t.projects.tag}</span>
             <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
             <span className="text-[11px] text-slate-500 font-mono">
@@ -90,7 +90,7 @@ export const FeaturedProjects: React.FC = () => {
         </div>
 
         {/* Right Action & Autoplay Status Badge */}
-        <div className="flex items-center gap-3 self-start md:self-end">
+        <div className="flex items-center gap-3 self-start md:self-end shrink-0 whitespace-nowrap">
           {/* Autoplay status indicator */}
           <div
             className={`hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-full text-xs font-mono transition-all border ${

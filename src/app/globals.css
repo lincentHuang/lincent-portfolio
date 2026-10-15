@@ -28,6 +28,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Typography: avoid orphaned CJK characters & awkward breaks */
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    text-wrap: balance;
+  }
+
+  p, li, blockquote, figcaption {
+    text-wrap: pretty;
+  }
+
+  body {
+    line-break: strict;
+  }
+}
+
 /* Premium Surface & Card Classes */
 .portfolio-card,
 .sevora-card {

@@ -1,67 +1,72 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowDown, ArrowLeftRight, ArrowUp, ImagePlus, Layers, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowLeftRight, ArrowUp, ImagePlus, ImageIcon, Layers, Plus, RefreshCw, Trash2, X, Crop, Maximize } from 'lucide-react';
 import type { GalleryRow, GalleryRowLayout, GallerySlot } from '../../../types';
 import { MediaPicker } from '../shared/media';
-import { IconBtn, inputCls } from '../shared/fields';
+import { IconBtn } from '../shared/fields';
+import { DEFAULT_ROW_RATIO, GALLERY_LAYOUTS, GalleryRowView, columnsOf, slotCountOf } from '../../projects/components/gallery-row-view';
 
 const uid = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-
-const LAYOUTS: { key: GalleryRowLayout; label: string; widths: number[] }[] = [
-  { key: 'full', label: '全寬', widths: [100] },
-  { key: 'split-equal', label: '等分', widths: [50, 50] },
-  { key: 'split-left-small', label: '左小右大', widths: [40, 60] },
-  { key: 'split-left-large', label: '左大右小', widths: [60, 40] },
-];
-const widthsOf = (l: GalleryRowLayout) => LAYOUTS.find((x) => x.key === l)!.widths;
-const slotCount = (l: GalleryRowLayout) => (l === 'full' ? 1 : 2);
 
 const emptySlot = (url = ''): GallerySlot => ({ id: uid('slot'), url, fit: 'cover', aspectRatio: 'auto' });
 const newRow = (layout: GalleryRowLayout, urls: string[] = []): GalleryRow => ({
   id: uid('row'),
   layout,
-  slots: Array.from({ length: slotCount(layout) }, (_, i) => emptySlot(urls[i] || '')),
+  slots: Array.from({ length: slotCountOf(layout) }, (_, i) => emptySlot(urls[i] || '')),
 });
 
-const ASPECTS = [
-  { v: 'auto', l: '自動（原圖比例）' },
+const ROW_RATIOS = [
+  { v: '21/9', l: '很扁 21:9' },
+  { v: '5/2', l: '扁 5:2' },
+  { v: '2/1', l: '標準 2:1' },
+  { v: '16/9', l: '偏高 16:9' },
+  { v: '3/2', l: '高 3:2' },
+];
+const FULL_RATIOS = [
+  { v: 'auto', l: '原圖比例' },
+  { v: '21/9', l: '21:9' },
   { v: '16/9', l: '16:9' },
   { v: '4/3', l: '4:3' },
   { v: '1/1', l: '1:1' },
-  { v: '3/4', l: '3:4' },
 ];
 
-function LayoutIcon({ widths, active }: { widths: number[]; active?: boolean }) {
+const selectCls = 'rounded-lg border border-slate-200 bg-white px-1.5 py-1 text-[11px] text-slate-700';
+
+function LayoutIcon({ layout, active }: { layout: GalleryRowLayout; active?: boolean }) {
+  const cols = columnsOf(layout);
+  const total = cols.reduce((a, b) => a + b, 0);
   return (
-    <span className="flex h-5 w-9 gap-0.5">
-      {widths.map((w, i) => (
-        <span key={i} style={{ width: `${w}%` }} className={`h-full rounded-sm ${active ? 'bg-white' : 'bg-slate-400'}`} />
+    <span className="flex h-3.5 w-8 gap-0.5">
+      {cols.map((c, i) => (
+        <span key={i} style={{ width: `${(c / total) * 100}%` }} className={`h-full rounded-sm ${active ? 'bg-white' : 'bg-slate-400'}`} />
       ))}
     </span>
   );
 }
 
-function RowPreview({ row }: { row: GalleryRow }) {
-  const widths = widthsOf(row.layout);
+function InsertBar({ onInsert }: { onInsert: (layout: GalleryRowLayout) => void }) {
   return (
-    <div className="flex h-16 w-full gap-1 sm:h-20 sm:w-44 sm:shrink-0">
-      {widths.map((w, i) => {
-        const s = row.slots[i];
-        return (
-          <div
-            key={i}
-            style={{ width: `${w}%`, backgroundColor: s?.bgColor || undefined }}
-            className="relative overflow-hidden rounded-md border border-slate-200 bg-slate-100"
-          >
-            {s?.url ? (
-              <img src={s.url} alt="" className={`h-full w-full ${s.fit === 'contain' ? 'object-contain' : 'object-cover'}`} />
-            ) : (
-              <span className="flex h-full items-center justify-center text-[10px] text-slate-400">空白</span>
-            )}
-          </div>
-        );
-      })}
+    <div className="group relative z-10 h-3 sm:h-4">
+      <div className="absolute inset-x-0 top-1/2 h-px bg-transparent group-hover:bg-sky-300 group-focus-within:bg-sky-300" />
+      <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1 rounded-full border border-slate-200 bg-white px-1 py-0.5 opacity-40 shadow-sm transition group-hover:opacity-100 group-focus-within:opacity-100">
+        <button type="button" aria-label="在這裡插入新的一列" className="flex h-4 w-4 items-center justify-center rounded-full text-slate-500">
+          <Plus className="h-3 w-3" />
+        </button>
+        <div className="hidden items-center gap-1 group-hover:flex group-focus-within:flex">
+          {GALLERY_LAYOUTS.map((l) => (
+            <button
+              key={l.key}
+              type="button"
+              title={`插入「${l.label}」`}
+              onClick={() => onInsert(l.key)}
+              className="rounded-md bg-slate-50 px-1.5 py-1 hover:bg-slate-200"
+            >
+              <LayoutIcon layout={l.key} />
+            </button>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -69,9 +74,9 @@ function RowPreview({ row }: { row: GalleryRow }) {
 export function GalleryRowsEditor({ rows, onChange }: { rows: GalleryRow[]; onChange: (rows: GalleryRow[]) => void }) {
   const [batchOpen, setBatchOpen] = useState(false);
   const [strategy, setStrategy] = useState<'full' | 'pair'>('full');
-  const [addLayout, setAddLayout] = useState<GalleryRowLayout>('full');
   const [pickSlot, setPickSlot] = useState<{ rowId: string; index: number } | null>(null);
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [dragFrom, setDragFrom] = useState<{ rowId: string; index: number } | null>(null);
+  const [dragOver, setDragOver] = useState<string | null>(null);
 
   const updateRow = (id: string, fn: (r: GalleryRow) => GalleryRow) => onChange(rows.map((r) => (r.id === id ? fn(r) : r)));
   const updateSlot = (rowId: string, index: number, patch: Partial<GallerySlot>) =>
@@ -87,13 +92,21 @@ export function GalleryRowsEditor({ rows, onChange }: { rows: GalleryRow[]; onCh
 
   const changeLayout = (row: GalleryRow, layout: GalleryRowLayout) => {
     if (layout === row.layout) return;
-    const need = slotCount(layout);
-    let slots = row.slots.slice(0, need);
-    if (row.slots.length > need && row.slots[1]?.url) {
-      if (!confirm('改成全寬後，右側那張圖片會從這一列移除（圖片仍在媒體庫）。確定嗎？')) return;
+    const need = slotCountOf(layout);
+    // 縮減格數時優先保留有圖的格子
+    const ordered = row.slots.length > need ? [...row.slots.filter((s) => s.url), ...row.slots.filter((s) => !s.url)] : row.slots;
+    let slots = ordered.slice(0, need);
+    if (ordered.slice(need).some((s) => s.url)) {
+      if (!confirm('改成整列後，右側那張圖片會從這一列移除（圖片仍在媒體庫）。確定嗎？')) return;
     }
     while (slots.length < need) slots = [...slots, emptySlot()];
     updateRow(row.id, (r) => ({ ...r, layout, slots }));
+  };
+
+  const insertAt = (pos: number, layout: GalleryRowLayout) => {
+    const next = [...rows];
+    next.splice(pos, 0, newRow(layout));
+    onChange(next);
   };
 
   const batchAdd = (urls: string[]) => {
@@ -110,13 +123,116 @@ export function GalleryRowsEditor({ rows, onChange }: { rows: GalleryRow[]; onCh
     onChange([...rows, ...created]);
   };
 
+  // 拖曳交換：兩個格子的內容整個對調，位置不變
+  const swapSlots = (from: { rowId: string; index: number }, to: { rowId: string; index: number }) => {
+    if (from.rowId === to.rowId && from.index === to.index) return;
+    const rowA = rows.find((r) => r.id === from.rowId);
+    const rowB = rows.find((r) => r.id === to.rowId);
+    if (!rowA || !rowB) return;
+    const a = rowA.slots[from.index];
+    const b = rowB.slots[to.index];
+    if (!a || !b) return;
+    onChange(
+      rows.map((r) => {
+        if (r.id !== rowA.id && r.id !== rowB.id) return r;
+        return {
+          ...r,
+          slots: r.slots.map((s, i) => {
+            if (r.id === from.rowId && i === from.index) return b;
+            if (r.id === to.rowId && i === to.index) return a;
+            return s;
+          }),
+        };
+      }),
+    );
+  };
+
+  const cellPropsFor = (row: GalleryRow) => (index: number): React.HTMLAttributes<HTMLDivElement> => {
+    const key = `${row.id}:${index}`;
+    const filled = Boolean(row.slots[index]?.url);
+    const isSource = dragFrom?.rowId === row.id && dragFrom.index === index;
+    const isOver = dragOver === key && dragFrom && !isSource;
+    return {
+      draggable: filled,
+      onDragStart: (e) => {
+        if (!filled) return;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', 'gallery-slot');
+        setDragFrom({ rowId: row.id, index });
+      },
+      onDragEnd: () => {
+        setDragFrom(null);
+        setDragOver(null);
+      },
+      onDragOver: (e) => {
+        if (!dragFrom) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (dragOver !== key) setDragOver(key);
+      },
+      onDragLeave: () => {
+        if (dragOver === key) setDragOver(null);
+      },
+      onDrop: (e) => {
+        e.preventDefault();
+        if (dragFrom) swapSlots(dragFrom, { rowId: row.id, index });
+        setDragFrom(null);
+        setDragOver(null);
+      },
+      className: `${isOver ? 'ring-4 ring-sky-400' : ''} ${isSource ? 'opacity-50' : ''}`,
+    };
+  };
+
+  const renderOverlay = (row: GalleryRow) => (slot: GallerySlot | undefined, index: number) => {
+    if (!slot?.url) return null;
+    const btn = 'inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100';
+    return (
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="absolute inset-x-2 top-2 z-10 flex flex-wrap items-center gap-0.5 rounded-xl bg-white/95 p-1 opacity-0 shadow-lg transition group-hover:opacity-100 focus-within:opacity-100"
+      >
+        <button type="button" className={btn} onClick={() => setPickSlot({ rowId: row.id, index })}>
+          <RefreshCw className="h-3 w-3" /> 換圖
+        </button>
+        <button
+          type="button"
+          className={btn}
+          title="切換圖片填滿方式"
+          onClick={() => updateSlot(row.id, index, { fit: slot.fit === 'contain' ? 'cover' : 'contain' })}
+        >
+          {slot.fit === 'contain' ? <Maximize className="h-3 w-3" /> : <Crop className="h-3 w-3" />}
+          {slot.fit === 'contain' ? '完整顯示' : '裁切填滿'}
+        </button>
+        <span className="inline-flex items-center gap-1 px-1 text-[11px] text-slate-600">
+          背景
+          <input
+            type="color"
+            value={slot.bgColor || '#eef0f3'}
+            onChange={(e) => updateSlot(row.id, index, { bgColor: e.target.value })}
+            className="h-5 w-6 cursor-pointer rounded border border-slate-200"
+          />
+          {slot.bgColor && (
+            <button type="button" title="清除背景色" className="text-slate-400 hover:text-slate-700" onClick={() => updateSlot(row.id, index, { bgColor: undefined })}>
+              <X className="h-3 w-3" />
+            </button>
+          )}
+        </span>
+        <button type="button" className={`${btn} ml-auto text-red-600 hover:bg-red-50`} onClick={() => updateSlot(row.id, index, { url: '' })}>
+          <Trash2 className="h-3 w-3" /> 移除圖片
+        </button>
+      </div>
+    );
+  };
+
+  const renderEmpty = () => (
+    <div className="absolute inset-2 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-300 text-xs text-slate-400">
+      <ImageIcon className="h-5 w-5" />
+      點擊選擇圖片
+    </div>
+  );
+
   return (
     <div className="space-y-4">
-      <div className="rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-        <Layers className="mr-1 inline h-3.5 w-3.5" />
-        前台專案頁會依照這裡的列順序由上往下顯示。每一列可以是一張全寬圖，或兩張並排。
-      </div>
-
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -144,165 +260,120 @@ export function GalleryRowsEditor({ rows, onChange }: { rows: GalleryRow[]; onCh
         <span className="text-[11px] text-slate-400">
           {strategy === 'full' ? '每張圖各佔一列' : '依選取順序兩張一列，剩下單張用全寬'}
         </span>
-        <div className="ml-auto flex items-center gap-2">
-          <select value={addLayout} onChange={(e) => setAddLayout(e.target.value as GalleryRowLayout)} className="rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs">
-            {LAYOUTS.map((l) => (
-              <option key={l.key} value={l.key}>
-                {l.label}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() => {
-              const r = newRow(addLayout);
-              onChange([...rows, r]);
-              setOpenId(r.id);
-            }}
-            className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-          >
-            <Plus className="h-3.5 w-3.5" /> 新增單列
-          </button>
-        </div>
+      </div>
+      <div className="rounded-xl bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
+        <Layers className="mr-1 inline h-3.5 w-3.5" />
+        下方就是前台專案頁的實際樣子。點空格選圖、滑過圖片可換圖或調整填滿方式，拖曳圖片到另一格可對調位置，列與列之間的「＋」可插入新的一列。
       </div>
 
       {rows.length === 0 ? (
         <div className="rounded-xl border border-dashed border-slate-300 py-10 text-center">
           <p className="text-sm font-semibold text-slate-700">還沒有相簿圖片</p>
-          <p className="mt-1 text-xs text-slate-500">沒有相簿時，專案頁會只顯示封面圖。按上方「批次加入圖片」開始。</p>
+          <p className="mt-1 text-xs text-slate-500">沒有相簿時，專案頁會只顯示封面圖。可以一次選多張圖，或先建立一個空白列再慢慢放。</p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <button type="button" onClick={() => setBatchOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white">
+              <ImagePlus className="h-3.5 w-3.5" /> 批次加入圖片
+            </button>
+            <button
+              type="button"
+              onClick={() => insertAt(0, 'full')}
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              <Plus className="h-3.5 w-3.5" /> 新增第一列
+            </button>
+          </div>
         </div>
       ) : (
-        <ol className="space-y-3">
+        <div className="rounded-2xl border border-slate-200 bg-white p-3 sm:p-4">
+          <InsertBar onInsert={(l) => insertAt(0, l)} />
           {rows.map((row, i) => {
-            const isOpen = openId === row.id;
+            const isFull = row.layout === 'full';
             return (
-              <li key={row.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-                <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-xs font-bold text-slate-500">{i + 1}</span>
-                  <RowPreview row={row} />
-                  <div className="flex flex-1 flex-wrap items-center gap-1">
-                    {LAYOUTS.map((l) => (
-                      <button
-                        key={l.key}
-                        type="button"
-                        title={l.label}
-                        onClick={() => changeLayout(row, l.key)}
-                        className={`flex flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[10px] ${
-                          row.layout === l.key ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
-                        }`}
-                      >
-                        <LayoutIcon widths={l.widths} active={row.layout === l.key} />
-                        {l.label}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-0.5">
-                    {row.slots.length === 2 && (
-                      <IconBtn label="左右對調" onClick={() => updateRow(row.id, (r) => ({ ...r, slots: [r.slots[1], r.slots[0]] }))}>
-                        <ArrowLeftRight className="h-3.5 w-3.5" />
-                      </IconBtn>
-                    )}
-                    <IconBtn label="上移" onClick={() => move(i, -1)} disabled={i === 0}>
-                      <ArrowUp className="h-3.5 w-3.5" />
-                    </IconBtn>
-                    <IconBtn label="下移" onClick={() => move(i, 1)} disabled={i === rows.length - 1}>
-                      <ArrowDown className="h-3.5 w-3.5" />
-                    </IconBtn>
-                    <IconBtn
-                      label="刪除這一列"
-                      danger
-                      onClick={() => {
-                        if (confirm(`確定刪除第 ${i + 1} 列？（圖片仍保留在媒體庫）`)) onChange(rows.filter((r) => r.id !== row.id));
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </IconBtn>
-                    <button
-                      type="button"
-                      onClick={() => setOpenId(isOpen ? null : row.id)}
-                      className="ml-1 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
-                    >
-                      {isOpen ? '收合' : '編輯圖片'}
-                    </button>
-                  </div>
-                </div>
-
-                {isOpen && (
-                  <div className="grid gap-4 border-t border-slate-200 bg-slate-50/60 p-4 md:grid-cols-2">
-                    {row.slots.map((slot, si) => (
-                      <div key={slot.id} className="space-y-2.5 rounded-xl border border-slate-200 bg-white p-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-700">{row.slots.length === 1 ? '圖片' : si === 0 ? '左側圖片' : '右側圖片'}</span>
-                          <button
-                            type="button"
-                            onClick={() => setPickSlot({ rowId: row.id, index: si })}
-                            className="rounded-lg bg-slate-900 px-3 py-1 text-[11px] font-semibold text-white"
-                          >
-                            {slot.url ? '更換圖片' : '選擇圖片'}
-                          </button>
-                        </div>
-                        <div
-                          className="flex aspect-video items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-slate-100"
-                          style={{ backgroundColor: slot.bgColor || undefined }}
+              <div key={row.id}>
+                <div className="group/row space-y-1.5">
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-500 opacity-70 transition focus-within:opacity-100 group-hover/row:opacity-100">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-slate-100 text-[11px] font-bold">{i + 1}</span>
+                    <div className="flex items-center gap-0.5">
+                      {GALLERY_LAYOUTS.map((l) => (
+                        <button
+                          key={l.key}
+                          type="button"
+                          title={l.label}
+                          onClick={() => changeLayout(row, l.key)}
+                          className={`flex items-center gap-1 rounded-md px-1.5 py-1 text-[10px] ${
+                            row.layout === l.key ? 'bg-slate-900 text-white' : 'bg-slate-50 text-slate-500 hover:bg-slate-100'
+                          }`}
                         >
-                          {slot.url ? (
-                            <img src={slot.url} alt="" className={`h-full w-full ${slot.fit === 'contain' ? 'object-contain' : 'object-cover'}`} />
-                          ) : (
-                            <span className="text-xs text-slate-400">尚未選擇圖片</span>
-                          )}
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <label className="space-y-1">
-                            <span className="block text-[11px] font-semibold text-slate-600">填滿方式</span>
-                            <select className={inputCls} value={slot.fit || 'cover'} onChange={(e) => updateSlot(row.id, si, { fit: e.target.value as 'cover' | 'contain' })}>
-                              <option value="cover">裁切填滿 (cover)</option>
-                              <option value="contain">完整顯示 (contain)</option>
-                            </select>
-                          </label>
-                          <label className="space-y-1">
-                            <span className="block text-[11px] font-semibold text-slate-600">長寬比</span>
-                            <select className={inputCls} value={slot.aspectRatio || 'auto'} onChange={(e) => updateSlot(row.id, si, { aspectRatio: e.target.value })}>
-                              {ASPECTS.map((a) => (
-                                <option key={a.v} value={a.v}>
-                                  {a.l}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                        </div>
-                        <label className="block space-y-1">
-                          <span className="block text-[11px] font-semibold text-slate-600">圖說（選填）</span>
-                          <input className={inputCls} value={slot.caption || ''} onChange={(e) => updateSlot(row.id, si, { caption: e.target.value })} />
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-semibold text-slate-600">背景色（選填）</span>
-                          <input
-                            type="color"
-                            value={slot.bgColor || '#0a0a0e'}
-                            onChange={(e) => updateSlot(row.id, si, { bgColor: e.target.value })}
-                            className="h-7 w-10 cursor-pointer rounded border border-slate-200"
-                          />
-                          {slot.bgColor && (
-                            <button type="button" className="text-[11px] text-slate-500 underline" onClick={() => updateSlot(row.id, si, { bgColor: undefined })}>
-                              清除
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                          <LayoutIcon layout={l.key} active={row.layout === l.key} />
+                          <span className="hidden md:inline">{l.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <label className="inline-flex items-center gap-1 text-[11px]">
+                      高度
+                      {isFull ? (
+                        <select className={selectCls} value={row.slots[0]?.aspectRatio || 'auto'} onChange={(e) => updateSlot(row.id, 0, { aspectRatio: e.target.value })}>
+                          {FULL_RATIOS.map((a) => (
+                            <option key={a.v} value={a.v}>
+                              {a.l}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <select className={selectCls} value={row.ratio || DEFAULT_ROW_RATIO} onChange={(e) => updateRow(row.id, (r) => ({ ...r, ratio: e.target.value }))}>
+                          {ROW_RATIOS.map((a) => (
+                            <option key={a.v} value={a.v}>
+                              {a.l}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </label>
+                    <div className="ml-auto flex items-center gap-0.5">
+                      {!isFull && (
+                        <IconBtn label="左右對調" onClick={() => updateRow(row.id, (r) => ({ ...r, slots: [r.slots[1], r.slots[0]] }))}>
+                          <ArrowLeftRight className="h-3.5 w-3.5" />
+                        </IconBtn>
+                      )}
+                      <IconBtn label="上移" onClick={() => move(i, -1)} disabled={i === 0}>
+                        <ArrowUp className="h-3.5 w-3.5" />
+                      </IconBtn>
+                      <IconBtn label="下移" onClick={() => move(i, 1)} disabled={i === rows.length - 1}>
+                        <ArrowDown className="h-3.5 w-3.5" />
+                      </IconBtn>
+                      <IconBtn
+                        label="刪除這一列"
+                        danger
+                        onClick={() => {
+                          if (confirm(`確定刪除第 ${i + 1} 列？（圖片仍保留在媒體庫）`)) onChange(rows.filter((r) => r.id !== row.id));
+                        }}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </IconBtn>
+                    </div>
                   </div>
-                )}
-              </li>
+                  <GalleryRowView
+                    row={row}
+                    cellProps={cellPropsFor(row)}
+                    renderOverlay={renderOverlay(row)}
+                    renderEmpty={renderEmpty}
+                    onSlotClick={(slot, index) => {
+                      if (!slot?.url) setPickSlot({ rowId: row.id, index });
+                    }}
+                  />
+                </div>
+                <InsertBar onInsert={(l) => insertAt(i + 1, l)} />
+              </div>
             );
           })}
-        </ol>
+        </div>
       )}
 
       <MediaPicker multiple open={batchOpen} onClose={() => setBatchOpen(false)} onSelect={batchAdd} title="批次加入相簿圖片（依點選順序排列）" />
       <MediaPicker
         open={!!pickSlot}
         onClose={() => setPickSlot(null)}
-        onSelect={([url]) => pickSlot && updateSlot(pickSlot.rowId, pickSlot.index, { url })}
+        onSelect={([url]) => pickSlot && url && updateSlot(pickSlot.rowId, pickSlot.index, { url })}
         title="選擇這個格位的圖片"
       />
     </div>

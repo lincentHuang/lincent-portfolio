@@ -32,6 +32,8 @@ export interface GalleryRow {
   layout: GalleryRowLayout;
   slots: GallerySlot[]; // slots[0] is Left/Main, slots[1] is Right (for 2-col layouts)
   caption?: string;
+  /** 兩欄列的整列長寬比（例 '2/1'），兩張圖等高裁切；全寬列改用 slots[0].aspectRatio */
+  ratio?: string;
 }
 
 // ==========================================

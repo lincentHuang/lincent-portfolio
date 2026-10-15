@@ -234,7 +234,7 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
           <img
             src="/images/lincent-logo.svg"
             alt="lincent"
-            className="w-12 h-12 object-contain opacity-90 animate-pulse"
+            className="w-12 h-12 object-contain opacity-90 animate-pulse invert"
           />
         </div>
       </div>

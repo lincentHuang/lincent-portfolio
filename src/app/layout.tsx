@@ -10,7 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: site.seo.title.zh,
     description: site.seo.description.zh,
     icons: {
-      icon: '/images/lincent-logo.svg',
+      icon: '/favicon.svg',
       apple: '/images/lincent-logo.png',
     },
     openGraph: site.seo.ogImage ? { images: [site.seo.ogImage] } : undefined,

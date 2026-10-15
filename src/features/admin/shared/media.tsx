@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Check, ImagePlus, Loader2, Search, UploadCloud, X, AlertCircle } from 'lucide-react';
 import { adminApi, uploadFile, type MediaWithUsage } from './api';
+import { isVideoUrl } from '../../../components/media/media-image';
 
 // ==========================================
 // 圖片流程（後台）
@@ -366,7 +367,11 @@ export function ImageField({
       <div className={`group relative ${aspect} w-full overflow-hidden rounded-xl border border-slate-200 bg-slate-50`}>
         {value ? (
           <>
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            {isVideoUrl(value) ? (
+              <video src={value} muted playsInline preload="metadata" className="h-full w-full object-cover" />
+            ) : (
+              <img src={value} alt="" className="h-full w-full object-cover" />
+            )}
             <div className="absolute inset-0 flex items-center justify-center gap-2 bg-slate-950/50 opacity-0 transition group-hover:opacity-100">
               <button type="button" onClick={() => setOpen(true)} className="rounded-lg bg-white px-3 py-1.5 text-xs font-semibold">
                 更換

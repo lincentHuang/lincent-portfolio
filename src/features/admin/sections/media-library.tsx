@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Copy, Search, Trash2, X, Check } from 'lucide-react';
 import { ApiError, adminApi, type MediaUsage, type MediaWithUsage } from '../shared/api';
 import { UploadDropzone, UploadQueue, useMediaLibrary } from '../shared/media';
+import { isVideoUrl } from '../../../components/media/media-image';
 
 type Filter = 'all' | 'used' | 'unused';
 
@@ -262,7 +263,11 @@ function MediaDetail({
 
         <div className="space-y-5 p-5">
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-            <img src={item.url} alt={item.alt || ''} className="max-h-[360px] w-full object-contain" />
+            {isVideoUrl(item.url) ? (
+              <video src={item.url} poster={item.thumbUrl} controls muted playsInline className="max-h-[360px] w-full object-contain" />
+            ) : (
+              <img src={item.url} alt={item.alt || ''} className="max-h-[360px] w-full object-contain" />
+            )}
           </div>
 
           <dl className="grid grid-cols-3 gap-2 text-xs">
