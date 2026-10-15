@@ -2,18 +2,18 @@ import type { Metadata } from 'next';
 import { FrontendShell } from '../../components/layouts/frontend-shell';
 import { ContactCta } from '../../features/inquiries/components/contact-cta';
 import { Footer } from '../../components/layouts/footer';
-import { ProjectShowcase } from '../../features/projects/components/project-showcase';
+import { ProjectsOverview } from '../../features/projects/components/projects-overview';
 
 export const metadata: Metadata = {
-  title: 'Selected Projects & Engineering Showcase | Lincent Huang',
-  description: 'Explore full case studies, architecture decisions, and performance metrics across flagship projects.',
+  title: 'All Projects | Lincent Huang',
+  description: 'Browse every project at a glance and open any one for the full case study.',
 };
 
 export default function ProjectsPage() {
   return (
     <FrontendShell>
       <main className="w-full flex-1">
-        <ProjectShowcase />
+        <ProjectsOverview />
       </main>
       <ContactCta />
       <Footer />

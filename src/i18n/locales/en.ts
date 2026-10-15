@@ -29,6 +29,10 @@ export const en = {
     getInTouch: 'Get in touch',
   },
   projects: {
+    overviewTag: 'All work',
+    overviewTitle: 'Every project, at a glance',
+    overviewSubtitle: 'Browse the full collection — open any card for the complete case study.',
+    allCategories: 'All',
     tag: 'Selected work',
     title: 'Projects with clarity',
     subtitle: 'A curated collection of web architecture, design systems, and product engineering work created for modern teams.',

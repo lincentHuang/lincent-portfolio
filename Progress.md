@@ -27,3 +27,4 @@
 - 2026-10-15：新增報價開關 NEXT_PUBLIC_SHOW_PRICING（預設關），關閉時聯繫只剩正職／合作／其他、隱藏價格、AI 估價與作品授權購買（pricing.ts、contact-wizard.tsx、contact-cta.tsx、content-repo.ts、api/ai-estimate）
 - 2026-10-15：本機作品資料同步到正式機 R2：上傳 126 個媒體檔，content.json 以本機為準（28 筆作品、媒體網址改 R2 公開網址、詢問紀錄合併），同步前已備份正式機原內容（R2 content/content.backup-1792047170597.json、data/content/r2-prod.backup-1792047170597.json）
 - 2026-10-15：Vercel 設好 R2 環境變數後重新部署（推送到 main 即自動部署），確認正式站內容與媒體改由 R2 提供
+- 2026-10-15：/projects 改為作品集總覽頁（分類篩選＋卡片網格，點卡片進詳情）（src/features/projects/components/projects-overview.tsx、src/app/projects/page.tsx、i18n zh/en）

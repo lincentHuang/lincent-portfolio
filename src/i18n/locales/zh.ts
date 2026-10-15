@@ -29,6 +29,10 @@ export const zh = {
     getInTouch: '聯繫諮詢',
   },
   projects: {
+    overviewTag: '作品總覽',
+    overviewTitle: '全部作品',
+    overviewSubtitle: '一次瀏覽所有專案，點擊卡片查看完整案例。',
+    allCategories: '全部',
     tag: '精選代表作品',
     title: '以清晰架構打造的旗艦專案',
     subtitle: '從 0 到 1 打造的現代 Web 應用、企業級設計系統與極致效能架構代表作。',
