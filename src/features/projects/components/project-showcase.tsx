@@ -10,6 +10,8 @@ import { MarkdownRenderer } from './markdown-renderer';
 import { GalleryRowView, slotCountOf } from './gallery-row-view';
 import type { GalleryRow } from '../../../types';
 import { ProjectBadgeIcon, getShortProjectTitle } from './project-badge-icon';
+import { ProjectPager } from './project-pager';
+import { ProjectPurchase } from './project-purchase';
 import {
   ExternalLink,
   Sparkles,
@@ -328,6 +330,12 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
           </div>
         )}
       </div>
+
+      {/* 4. 購買授權／買斷（後台開啟販售才顯示） */}
+      <ProjectPurchase key={activeProject.id} project={activeProject} />
+
+      {/* 4. 上一個／下一個作品 */}
+      <ProjectPager projects={projects} currentId={activeProject.id} />
 
       {/* 5. LIGHTBOX FULLSCREEN ZOOM & MULTI-PHOTO GALLERY MODAL */}
       {lightboxIndex !== null && (

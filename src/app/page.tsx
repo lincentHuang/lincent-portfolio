@@ -10,7 +10,7 @@ import { ServicesSection } from '../features/portfolio/components/services-secti
 import { ProcessSection } from '../features/portfolio/components/process-section';
 import { TestimonialsSection } from '../features/portfolio/components/testimonials-section';
 import { ResumeSection } from '../features/portfolio/components/resume-section';
-import { InquirySection } from '../features/inquiries/components/inquiry-section';
+import { ContactCta } from '../features/inquiries/components/contact-cta';
 import { Footer } from '../components/layouts/footer';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -46,7 +46,7 @@ export default async function HomePage() {
 
         {s.experience && <ResumeSection />}
 
-        {s.contact && <InquirySection />}
+        {s.contact && <ContactCta />}
 
         <Footer />
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { FrontendShell } from '../../../components/layouts/frontend-shell';
+import { ContactCta } from '../../../features/inquiries/components/contact-cta';
 import { Footer } from '../../../components/layouts/footer';
 import { ProjectShowcase } from '../../../features/projects/components/project-showcase';
 import { getProjectById, getProjects } from '../../../features/projects/server/queries';
@@ -38,6 +39,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
       <main className="w-full flex-1">
         <ProjectShowcase initialSelectedId={projectId} />
       </main>
+      <ContactCta />
       <Footer />
     </FrontendShell>
   );

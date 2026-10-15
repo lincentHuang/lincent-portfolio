@@ -54,7 +54,7 @@ export const HeroSection: React.FC = () => {
 
               {/* Button 2: Get in touch */}
               <a
-                href="#contact"
+                href="/contact"
                 className="rounded-full px-6 py-3.5 bg-white/70 hover:bg-white text-slate-800 border border-slate-300/80 text-xs font-semibold transition-all hover:scale-105 active:scale-95 shadow-xs"
               >
                 {t.hero.getInTouch}
@@ -99,7 +99,7 @@ export const HeroSection: React.FC = () => {
             </p>
           </div>
           <a
-            href="#contact"
+            href="/contact"
             className="w-10 h-10 rounded-xl bg-white text-slate-900 flex items-center justify-center shrink-0 hover:scale-110 transition-transform shadow-md"
             title={t.hero.getInTouch}
           >

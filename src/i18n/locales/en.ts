@@ -4,7 +4,7 @@ export const en = {
     talk: 'Talk',
     contactBtn: 'Get in Touch',
     talkButton: "Let's talk",
-    availableForProjects: 'Available for projects',
+    availableForProjects: 'Open to opportunities',
     availableImmediate: 'Available Immediately',
     loading: 'Loading...',
     noData: 'No data available',

@@ -14,3 +14,14 @@
 - 2026-10-15：從 Notion「LINCENT 令成 Web Projects」匯入 37 張內頁截圖到 15 個客戶專案相簿（未獨立建檔的 9 個早期網站併入早期網站合集），缺封面者以首圖補上；長截圖改為寬度上限 1600 避免被縮窄（data/content/content.json、data/media/）
 - 2026-10-15：實地檢查 24 個舊客戶網站，僅 3 站仍為原版；錄製 4 支操作 GIF 放到相簿最前（kryptoGO×91APP、心理測驗、惟峰工業首屏與整頁），並依線上實際技術重寫三案中英文案；修正 GIF 被 srcSet 換成靜態縮圖的問題（data/content/content.json、src/components/media/media-image.tsx）
 - 2026-10-15：GIF 換成 MP4 介紹影片（片頭卡＋段落字卡，30fps），3 支放在相簿最前並刪除舊 GIF；相簿、燈箱、後台預覽支援影片，媒體路由支援 mp4 與 Range（src/components/media/media-image.tsx、src/app/media/[...key]/route.ts、project-showcase.tsx、data/content/content.json）
+- 2026-10-15：三站改為「先預載整頁、圖片字型載完才開錄」重錄完整介紹影片；另以實際操作（選單、燈箱、平滑捲動、測驗結果頁）剪成 3 支 10 秒特色影片，放在相簿第一列（data/content/content.json、data/media/）
+- 2026-10-15：作品頁底部加上一個／下一個作品導覽（頭尾循環）；聯繫區塊改為 CTA，含正職／短期合作／接案三種合作模組、接案報價表與 AI 估價（可帶入詢問表單），並放到首頁與作品頁最下方（src/features/projects/components/project-pager.tsx、src/features/inquiries/pricing.ts、src/features/inquiries/components/inquiry-section.tsx、ai-estimator.tsx、src/app/api/ai-estimate/route.ts）
+- 2026-10-15：聯繫區塊改成獨立 /contact 分步驟頁（合作方式 → 估價可跳過 → 需求 → 聯絡方式），首頁與作品頁改放精簡入口卡片並可帶 ?type= 直接跳步；移除舊 inquiry-section（src/app/contact/page.tsx、contact-wizard.tsx、contact-cta.tsx）
+- 2026-10-15：Logo 加入紙片摺疊循環動畫（public/images/lincent-logo-animated.svg），套用於手機版頂欄與換頁轉場（frontend-shell.tsx、page-transition-provider.tsx）
+- 2026-10-15：作品可開放購買：託管授權／原始碼授權／獨家買斷三種方案，價格依後台填的重建成本（與選填月淨利）計算，作品頁選方案後原地帶入詢價表單，scope 記為「購買專案」；重建成本與月淨利不送到前台（src/features/inquiries/pricing.ts、src/features/projects/components/project-purchase.tsx、src/server/content-repo.ts、src/features/admin/sections/project-editor.tsx）
+- 2026-10-15：桌面側欄品牌卡改用深色方框版動態 logo（public/images/lincent-logo-animated-badge.svg、global-sidebar.tsx）
+- 2026-10-15：換頁轉場 logo 改為內嵌 SVG 元件，每次轉場從頭播，且至少摺完一次（約 1.3 秒）才收起（src/components/brand/logo-fold-mark.tsx、page-transition-provider.tsx）
+- 2026-10-15：聯繫入口卡片與 footer 改為和作品頁內容同寬（補 w-full、內距一致），footer 分隔線移到內層以對齊卡片邊緣（contact-cta.tsx、src/components/layouts/footer.tsx）
+- 2026-10-15：建立 Cloudflare R2 bucket lincent-portfolio、開啟 r2.dev 公開網址與物件讀寫權杖，R2 變數寫入 .env.local 並實測上傳／讀取／刪除成功（src/server/storage.ts）
+- 2026-10-15：重建 R2 權杖（刪舊建新），.env.local 已更新且實測讀寫成功
+- 2026-10-15：新增報價開關 NEXT_PUBLIC_SHOW_PRICING（預設關），關閉時聯繫只剩正職／合作／其他、隱藏價格、AI 估價與作品授權購買（pricing.ts、contact-wizard.tsx、contact-cta.tsx、content-repo.ts、api/ai-estimate）

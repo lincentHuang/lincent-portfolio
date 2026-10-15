@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { FrontendShell } from '../../components/layouts/frontend-shell';
+import { ContactCta } from '../../features/inquiries/components/contact-cta';
 import { Footer } from '../../components/layouts/footer';
 import { ProjectShowcase } from '../../features/projects/components/project-showcase';
 
@@ -14,6 +15,7 @@ export default function ProjectsPage() {
       <main className="w-full flex-1">
         <ProjectShowcase />
       </main>
+      <ContactCta />
       <Footer />
     </FrontendShell>
   );

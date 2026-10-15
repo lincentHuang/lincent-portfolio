@@ -8,6 +8,7 @@ import { Field, ListEditor, SectionCard, TagsInput, TextInput, Toggle, inputCls 
 import { ImageField, MediaPicker } from '../shared/media';
 import { SaveBar } from '../shared/site-draft';
 import { GalleryRowsEditor } from './gallery-rows-editor';
+import { LICENSES, PROJECT_TIERS, formatNTD, licenseQuote } from '../../inquiries/pricing';
 
 const SLUG_RE = /^[a-z0-9-]+$/;
 const THEMES: { v: ThemeColor; l: string }[] = [
@@ -63,6 +64,7 @@ export function createEmptyProject(order: number): Project {
     metrics: [],
     demoUrl: '',
     githubUrl: '',
+    forSale: false,
   };
 }
 
@@ -244,6 +246,8 @@ export function ProjectEditor({
             </div>
           </SectionCard>
 
+          <SaleCard draft={draft} set={set} />
+
           <SectionCard title="分類與資訊">
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="類別（中）"><TextInput value={draft.category} onChange={(v) => set('category', v)} /></Field>
@@ -338,6 +342,64 @@ export function ProjectEditor({
 
       <SaveBar dirty={dirty} saving={saving} error={error} onSave={save} onDiscard={() => { setDraft(JSON.parse(base)); setError(null); }} />
     </div>
+  );
+}
+
+/** 金額欄位：空白存 undefined，避免存成 0 */
+function MoneyInput({ value, onChange, placeholder }: { value?: number; onChange: (v: number | undefined) => void; placeholder?: string }) {
+  return (
+    <input
+      className={inputCls}
+      inputMode="numeric"
+      value={value ? value.toLocaleString('en-US') : ''}
+      placeholder={placeholder}
+      onChange={(e) => {
+        const n = Number(e.target.value.replace(/[^0-9]/g, ''));
+        onChange(n > 0 ? n : undefined);
+      }}
+    />
+  );
+}
+
+function SaleCard({ draft, set }: { draft: Project; set: <K extends keyof Project>(k: K, v: Project[K]) => void }) {
+  const cost = draft.rebuildCost || 0;
+  return (
+    <SectionCard
+      title="販售授權"
+      description="只開放自己擁有著作權的產品；客戶網站的著作權在客戶，不要開。重建成本與月淨利只用來算價，不會出現在前台。"
+    >
+      <Toggle checked={!!draft.forSale} onChange={(v) => set('forSale', v)} label="開放購買" hint="作品頁會顯示託管授權、原始碼授權、獨家買斷三種方案" />
+      {draft.forSale && (
+        <>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="重建成本（NT$）" hint="如果有人找你從零做出這個產品，你會報多少">
+              <MoneyInput value={draft.rebuildCost} onChange={(v) => set('rebuildCost', v)} placeholder="例：250,000" />
+            </Field>
+            <Field label="月淨利（NT$，選填）" hint="有營收才填，買斷價會改取月淨利 × 24–36 與重建成本 50–80% 的較高者">
+              <MoneyInput value={draft.monthlyProfit} onChange={(v) => set('monthlyProfit', v)} />
+            </Field>
+          </div>
+          <p className="text-[11px] text-slate-500">
+            參考接案報價表：{PROJECT_TIERS.map((t) => `${t.name.zh} ${formatNTD(t.min)}–${formatNTD(t.max)}`).join('、')}
+          </p>
+          {cost > 0 ? (
+            <div className="grid gap-2 rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs md:grid-cols-3">
+              {LICENSES.map((l) => {
+                const q = licenseQuote(l.id, cost, draft.monthlyProfit);
+                return (
+                  <div key={l.id}>
+                    <div className="font-semibold text-slate-700">{l.name.zh}</div>
+                    <div className="font-mono text-slate-900">{q ? `${formatNTD(q.min)} – ${formatNTD(q.max)}` : l.fixedPrice?.zh}</div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-xs text-amber-600">還沒填重建成本，前台不會顯示購買方案。</p>
+          )}
+        </>
+      )}
+    </SectionCard>
   );
 }
 

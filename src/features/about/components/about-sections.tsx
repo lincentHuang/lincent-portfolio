@@ -255,7 +255,7 @@ export function Preferences() {
                 {isEn ? "Let's build something worth shipping." : '一起把好產品做出來。'}
               </h2>
               <div className="flex flex-wrap gap-3">
-                <Link href="/#contact" className="rounded-full px-6 py-3 bg-white text-[#121218] text-xs font-semibold hover:scale-105 transition-transform">
+                <Link href="/contact" className="rounded-full px-6 py-3 bg-white text-[#121218] text-xs font-semibold hover:scale-105 transition-transform">
                   {isEn ? 'Contact me' : '聯絡我'}
                 </Link>
                 <Link href="/projects" className="rounded-full px-6 py-3 border border-white/30 text-white text-xs font-semibold hover:bg-white/10 transition-colors">

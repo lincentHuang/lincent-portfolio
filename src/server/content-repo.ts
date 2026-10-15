@@ -13,6 +13,7 @@ import type {
   SiteContent,
 } from '../content/types';
 import type { GalleryRow } from '../types';
+import { PRICING_ENABLED, licenseQuote } from '../features/inquiries/pricing';
 
 const CONTENT_KEY = 'content/content.json';
 // R2 可能有多個實例同時跑，快取設短一點；本機單一程序寫入時會直接更新快取
@@ -51,9 +52,18 @@ export async function getPublicContent(): Promise<PublicContent> {
   }
   return {
     site: doc.site,
-    projects: doc.projects.filter((p) => p.published).sort(byOrder),
+    projects: doc.projects.filter((p) => p.published).sort(byOrder).map(toPublicProject),
     media,
   };
+}
+
+// 重建成本與營收是內部數字，前台只拿算好的價格區間
+function toPublicProject({ rebuildCost, monthlyProfit, licenseQuotes: _q, ...p }: Project): Project {
+  // 報價關閉時，前台連販售狀態都不送出
+  if (!PRICING_ENABLED) return { ...p, forSale: false };
+  const source = p.forSale && rebuildCost ? licenseQuote('source', rebuildCost, monthlyProfit) : null;
+  const buyout = p.forSale && rebuildCost ? licenseQuote('buyout', rebuildCost, monthlyProfit) : null;
+  return source && buyout ? { ...p, licenseQuotes: { source, buyout } } : { ...p, forSale: false };
 }
 
 const byOrder = (a: Project, b: Project) => a.order - b.order;

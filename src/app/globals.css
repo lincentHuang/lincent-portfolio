@@ -126,3 +126,13 @@ body {
 }
 
 
+
+/* 聯繫頁步驟切換 */
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.animate-step-in { animation: stepIn 0.35s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-step-in { animation: none; }
+}

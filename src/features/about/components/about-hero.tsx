@@ -74,7 +74,7 @@ export function AboutHero() {
 
               <div className="flex flex-wrap items-center gap-3 pt-1">
                 <Link
-                  href="/#contact"
+                  href="/contact"
                   className="rounded-full px-7 py-3.5 bg-[#121218] text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all active:scale-95 inline-flex items-center gap-1.5"
                 >
                   {isEn ? 'Contact me' : '聯絡我'}

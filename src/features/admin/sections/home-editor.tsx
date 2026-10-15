@@ -16,7 +16,7 @@ const SECTION_LABELS: { key: SectionKey; label: string; hint?: string }[] = [
   { key: 'process', label: '合作流程' },
   { key: 'testimonials', label: '推薦評價', hint: '只放真實推薦' },
   { key: 'experience', label: '工作經歷' },
-  { key: 'contact', label: '聯絡表單' },
+  { key: 'contact', label: '聯繫入口（導向 /contact）' },
 ];
 
 function HiddenBadge({ show }: { show: boolean }) {

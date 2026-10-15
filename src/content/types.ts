@@ -206,6 +206,14 @@ export interface Project {
   metrics?: { label: string; labelEn?: string; value: string }[];
   demoUrl?: string;
   githubUrl?: string;
+  /** 是否開放購買授權／買斷（只限自己擁有著作權的產品） */
+  forSale?: boolean;
+  /** 重建成本：從零接案要收的價格（NT$），授權價依此計算；不會送到前台 */
+  rebuildCost?: number;
+  /** 月淨利（NT$），有營收時用來拉高買斷價；不會送到前台 */
+  monthlyProfit?: number;
+  /** 前台用：伺服器依上面兩個數字算好的價格區間 */
+  licenseQuotes?: { source: { min: number; max: number }; buyout: { min: number; max: number } };
   updatedAt?: string;
 }
 

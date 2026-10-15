@@ -27,7 +27,7 @@ export const FrontendShell: React.FC<FrontendShellProps> = ({
         <header className="lg:hidden sticky top-0 z-40 w-full bg-[#F7F7F8]/90 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
             <img
-              src="/images/lincent-logo.svg"
+              src="/images/lincent-logo-animated.svg"
               alt="lincent"
               className="w-7 h-7 object-contain"
             />
@@ -48,7 +48,7 @@ export const FrontendShell: React.FC<FrontendShellProps> = ({
 
             {/* Let's talk link */}
             <Link
-              href="/#contact"
+              href="/contact"
               className="px-3 py-1.5 rounded-lg bg-[#121218] text-white text-xs font-semibold hover:bg-black shadow-xs"
             >
               {t.common.talk}

@@ -4,7 +4,7 @@ export const zh = {
     talk: '洽談',
     contactBtn: '聯繫合作',
     talkButton: "Let's talk",
-    availableForProjects: '可接受新專案合作',
+    availableForProjects: '歡迎聯繫交流',
     availableImmediate: '可隨時到職',
     loading: '載入中...',
     noData: '尚無資料',

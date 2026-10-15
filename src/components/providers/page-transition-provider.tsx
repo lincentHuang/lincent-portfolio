@@ -9,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { LogoFoldMark, LOGO_FOLD_DONE_MS } from '../brand/logo-fold-mark';
 
 interface PageTransitionContextType {
   transitionTo: (href: string, coords?: { x?: number; y?: number }) => void;
@@ -26,6 +27,10 @@ interface PageTransitionProviderProps {
 
 type TransitionStage = 'idle' | 'entering' | 'covered' | 'exiting';
 
+// 距離 logo 摺完一次還要等多久（摺完後保留一點停頓再收起）
+const remainingFoldMs = (startedAt: number) =>
+  Math.max(0, LOGO_FOLD_DONE_MS + 200 - (Date.now() - startedAt));
+
 export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
   children,
 }) => {
@@ -39,6 +44,8 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
   const enterTimerRef = useRef<NodeJS.Timeout | null>(null);
   const exitTimerRef = useRef<NodeJS.Timeout | null>(null);
   const safetyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const startedAtRef = useRef<number>(0);
+  const [transitionId, setTransitionId] = useState(0);
 
   // Trigger exit (slide away) when new page rendered
   const triggerExit = useCallback(() => {
@@ -63,10 +70,11 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
       currentPathnameRef.current = pathname;
 
       if (isTransitioningRef.current) {
-        // Small delay to ensure new page DOM has painted behind the curtain
+        // Small delay to ensure new page DOM has painted behind the curtain,
+        // and wait until the logo has folded at least once
         const timer = setTimeout(() => {
           triggerExit();
-        }, 80);
+        }, Math.max(80, remainingFoldMs(startedAtRef.current)));
         return () => clearTimeout(timer);
       }
     }
@@ -103,6 +111,8 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
       pendingHrefRef.current = href;
 
       // Start entering from bottom
+      startedAtRef.current = Date.now();
+      setTransitionId((id) => id + 1);
       setStage('entering');
 
       if (enterTimerRef.current) clearTimeout(enterTimerRef.current);
@@ -116,7 +126,7 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
           if (isTransitioningRef.current) {
             triggerExit();
           }
-        }, 1200);
+        }, Math.max(1200, remainingFoldMs(startedAtRef.current)));
       }, 400); // 400ms enter duration
     },
     [router, triggerExit]
@@ -231,11 +241,10 @@ export const PageTransitionProvider: React.FC<PageTransitionProviderProps> = ({
       >
         {/* Subtle center brand mark during transition */}
         <div className="flex flex-col items-center justify-center gap-3">
-          <img
-            src="/images/lincent-logo.svg"
-            alt="lincent"
-            className="w-12 h-12 object-contain opacity-90 animate-pulse invert"
-          />
+          {/* 每次轉場重新掛載，讓摺疊動畫從頭播 */}
+          {isVisible && (
+            <LogoFoldMark key={transitionId} className="w-12 h-12 opacity-90" color="#FFFFFF" />
+          )}
         </div>
       </div>
     </PageTransitionContext.Provider>
