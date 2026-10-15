@@ -25,3 +25,5 @@
 - 2026-10-15：建立 Cloudflare R2 bucket lincent-portfolio、開啟 r2.dev 公開網址與物件讀寫權杖，R2 變數寫入 .env.local 並實測上傳／讀取／刪除成功（src/server/storage.ts）
 - 2026-10-15：重建 R2 權杖（刪舊建新），.env.local 已更新且實測讀寫成功
 - 2026-10-15：新增報價開關 NEXT_PUBLIC_SHOW_PRICING（預設關），關閉時聯繫只剩正職／合作／其他、隱藏價格、AI 估價與作品授權購買（pricing.ts、contact-wizard.tsx、contact-cta.tsx、content-repo.ts、api/ai-estimate）
+- 2026-10-15：本機作品資料同步到正式機 R2：上傳 126 個媒體檔，content.json 以本機為準（28 筆作品、媒體網址改 R2 公開網址、詢問紀錄合併），同步前已備份正式機原內容（R2 content/content.backup-1792047170597.json、data/content/r2-prod.backup-1792047170597.json）
+- 2026-10-15：Vercel 設好 R2 環境變數後重新部署（推送到 main 即自動部署），確認正式站內容與媒體改由 R2 提供
