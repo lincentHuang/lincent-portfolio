@@ -4,120 +4,108 @@ import React from 'react';
 import { useI18n } from '../../../i18n';
 import { useSite } from '../../../content/content-provider';
 import { tx } from '../../../content/types';
-import { Sparkles } from 'lucide-react';
+import { SectionHeading } from './section-heading';
+import { Creases } from './paper';
+
+const SWATCHES = [
+  { name: 'ink', className: 'bg-[#121218]' },
+  { name: 'slate', className: 'bg-slate-500' },
+  { name: 'mist', className: 'bg-[#E1E4E8]' },
+  { name: 'paper', className: 'bg-white border border-slate-200' },
+];
+
+/** 卡片上方的小標 */
+const CardTag: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">{children}</span>
+);
 
 export const BenefitsSection: React.FC = () => {
   const { lang } = useI18n();
   const site = useSite();
   const c = site.benefits;
+  const [design, perf, arch] = c.cards;
 
   return (
     <section id="benefits" className="py-20 px-4 sm:px-8 max-w-6xl mx-auto">
-      {/* Section Header */}
-      <div className="space-y-3 mb-12">
-        <div className="inline-block px-3 py-1 rounded-full bg-white border border-slate-200 text-xs font-semibold text-slate-800 shadow-xs">
-          {tx(c.tag, lang)}
-        </div>
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-slate-900">
-          {tx(c.title, lang)}
-        </h2>
-        <p className="text-sm sm:text-base text-slate-600 max-w-2xl font-normal leading-relaxed">
-          {tx(c.subtitle, lang)}
-        </p>
-      </div>
+      <SectionHeading tag={tx(c.tag, lang)} title={tx(c.title, lang)} subtitle={tx(c.subtitle, lang)} />
 
-      {/* 3 Bento Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-        {/* Card 1: Clear Design Systems (7 Cols) */}
-        <div className="md:col-span-7 p-7 sm:p-9 portfolio-card flex flex-col justify-between space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+        {/* 設計系統 */}
+        <div className="md:col-span-7 p-7 sm:p-9 portfolio-card flex flex-col gap-8">
           <div className="space-y-3">
-            <h3 className="text-xl sm:text-2xl font-sans font-bold text-slate-900">
-              {tx(c.cards[0]?.title, lang)}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {tx(c.cards[0]?.desc, lang)}
-            </p>
+            <CardTag>{tx(design?.tag, lang)}</CardTag>
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#121218]">{tx(design?.title, lang)}</h3>
+            <p className="text-sm text-slate-600 leading-relaxed max-w-lg">{tx(design?.desc, lang)}</p>
           </div>
 
-          {/* Interactive UI Component Tokens Preview */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <div className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
-              {tx(c.cards[0]?.tag, lang)}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button className="px-3.5 py-1.5 rounded-full bg-[#121218] text-white text-xs font-medium">
-                Primary
-              </button>
-              <button className="px-3.5 py-1.5 rounded-full bg-slate-200 text-slate-800 text-xs font-medium">
-                Secondary
-              </button>
-              <button className="px-3.5 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-medium">
-                Outline
-              </button>
-              <button className="px-3.5 py-1.5 rounded-full bg-transparent hover:bg-slate-200 text-slate-600 text-xs font-medium">
-                Ghost
-              </button>
-              <span className="px-3 py-1 rounded-full bg-lime-50 text-lime-800 border border-lime-300 text-[11px] font-bold">
-                Lime Accent
-              </span>
-              <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 border border-purple-200 text-[11px] font-bold">
-                Violet 80+
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Card 2: Websites built to perform (5 Cols) */}
-        <div className="md:col-span-5 p-7 sm:p-9 portfolio-card flex flex-col justify-between space-y-6">
-          <div className="space-y-3">
-            <h3 className="text-xl sm:text-2xl font-sans font-bold text-slate-900">
-              {tx(c.cards[1]?.title, lang)}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {tx(c.cards[1]?.desc, lang)}
-            </p>
-          </div>
-
-          {/* Performance Analytics Widget Mockup */}
-          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
-              <span>{tx(c.cards[1]?.tag, lang)}</span>
-              <span className="text-lime-600 font-bold">99 / 100</span>
-            </div>
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div className="p-3 bg-white rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-400 block font-mono">FCP (First Paint)</span>
-                <span className="text-sm font-bold text-slate-900">0.4s</span>
+          <div className="mt-auto grid grid-cols-[auto_1fr] gap-5 items-center rounded-2xl bg-gradient-to-br from-[#F2F3F5] to-[#E1E4E8] border border-[#D5D9E0] p-5">
+            <span className="text-[44px] font-bold leading-none tracking-tight text-[#121218]" aria-hidden="true">
+              Aa
+            </span>
+            <div className="space-y-3 min-w-0">
+              <div className="flex items-center gap-2">
+                {SWATCHES.map((s) => (
+                  <span key={s.name} className="flex flex-col items-center gap-1">
+                    <span className={`w-7 h-7 rounded-full ${s.className}`} />
+                    <span className="text-[10px] font-mono text-slate-400">{s.name}</span>
+                  </span>
+                ))}
               </div>
-              <div className="p-3 bg-white rounded-xl border border-slate-200">
-                <span className="text-[10px] text-slate-400 block font-mono">LCP (Largest Paint)</span>
-                <span className="text-sm font-bold text-slate-900">0.8s</span>
+              <div className="flex flex-wrap items-center gap-2" aria-hidden="true">
+                <span className="px-3.5 py-1.5 rounded-full bg-[#121218] text-white text-xs font-medium">Primary</span>
+                <span className="px-3.5 py-1.5 rounded-full bg-white border border-slate-300 text-slate-700 text-xs font-medium">Secondary</span>
+                <span className="px-3.5 py-1.5 rounded-full text-slate-500 text-xs font-medium">Ghost</span>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Card 3: Modern Architecture Execution (12 Cols Wide) */}
-        <div className="md:col-span-12 p-7 sm:p-9 portfolio-card flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lime-50 text-lime-800 border border-lime-200 text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>{tx(c.cards[2]?.tag, lang)}</span>
-            </div>
-            <h3 className="text-xl sm:text-2xl font-sans font-bold text-slate-900">
-              {tx(c.cards[2]?.title, lang)}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {tx(c.cards[2]?.desc, lang)}
-            </p>
+        {/* 效能與 SEO */}
+        <div className="md:col-span-5 p-7 sm:p-9 portfolio-card flex flex-col gap-8">
+          <div className="space-y-3">
+            <CardTag>{tx(perf?.tag, lang)}</CardTag>
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#121218]">{tx(perf?.title, lang)}</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">{tx(perf?.desc, lang)}</p>
           </div>
 
-          <div className="flex flex-wrap gap-2 md:max-w-xs">
-            {(c.cards[2]?.chips || []).map((tag) => (
-              <span
-                key={tag}
-                className="px-3 py-1.5 rounded-xl text-xs font-mono bg-slate-50 text-slate-800 border border-slate-200 font-medium"
-              >
+          <div className="mt-auto rounded-2xl bg-gradient-to-br from-[#F2F3F5] to-[#E1E4E8] border border-[#D5D9E0] p-5">
+            <div className="flex items-baseline justify-between">
+              <span className="text-[11px] font-mono text-slate-500">Lighthouse</span>
+              <span className="text-[11px] text-slate-400">{lang === 'zh' ? 'kryptoGO 官網實測' : 'Measured on kryptoGO.com'}</span>
+            </div>
+            <div className="mt-3 flex items-end gap-5">
+              <span className="text-[44px] font-bold leading-none tracking-tight text-[#121218]">99</span>
+              <dl className="flex gap-5 pb-1 text-[#121218]">
+                <div>
+                  <dt className="text-[10px] font-mono text-slate-400">FCP</dt>
+                  <dd className="text-sm font-bold">0.4s</dd>
+                </div>
+                <div>
+                  <dt className="text-[10px] font-mono text-slate-400">LCP</dt>
+                  <dd className="text-sm font-bold">0.8s</dd>
+                </div>
+              </dl>
+            </div>
+            <div className="mt-4 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+              <div className="h-full w-[99%] rounded-full bg-emerald-500" />
+            </div>
+          </div>
+        </div>
+
+        {/* 工程架構 */}
+        <div className="relative overflow-hidden md:col-span-12 p-7 sm:p-9 portfolio-card grid md:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] gap-8 md:items-center">
+          <div className="hidden md:block">
+            <Creases variant="left" className="text-slate-400/25" />
+          </div>
+          <div className="relative space-y-3">
+            <CardTag>{tx(arch?.tag, lang)}</CardTag>
+            <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-[#121218]">{tx(arch?.title, lang)}</h3>
+            <p className="text-sm text-slate-600 leading-relaxed max-w-xl">{tx(arch?.desc, lang)}</p>
+          </div>
+
+          <div className="relative flex flex-wrap gap-2 md:justify-end">
+            {(arch?.chips || []).map((tag) => (
+              <span key={tag} className="px-3 py-1.5 rounded-xl text-xs font-mono bg-white/70 text-slate-700 border border-slate-300/70">
                 {tag}
               </span>
             ))}

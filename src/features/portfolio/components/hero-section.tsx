@@ -1,126 +1,115 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { useI18n } from '../../../i18n';
 import { useSite } from '../../../content/content-provider';
 import { tx } from '../../../content/types';
-import { MediaImage } from '../../../components/media/media-image';
-import { ArrowUpRight } from 'lucide-react';
+import { ORIGAMI_MODELS } from '../../../components/brand/origami-models';
+import { Eyebrow, PaperPanel } from './paper';
+
+// three.js 只在瀏覽器端載入，並與首屏程式碼分開打包
+const OrigamiFold3D = dynamic(() => import('../../../components/brand/origami-fold-3d').then((m) => m.OrigamiFold3D), { ssr: false });
 
 export const HeroSection: React.FC = () => {
   const { t, lang } = useI18n();
   const site = useSite();
   const h = site.hero;
+  const [model, setModel] = React.useState(0);
+  const next = () => setModel((m) => (m + 1) % ORIGAMI_MODELS.length);
 
   return (
     <section className="pb-8 px-4 sm:px-8 max-w-7xl mx-auto">
-      {/* Giant Rounded Hero Bento Container */}
-      <div className="rounded-2xl bg-gradient-to-b from-[#E7E9EC] via-[#EEF0F3] to-[#E4E6EA] border border-[#D5D9E0] overflow-hidden relative p-8 sm:p-12 lg:p-16 min-h-[580px] lg:min-h-[640px] flex flex-col justify-between shadow-portfolio-card">
-        {/* Background Subtle Noise / Mesh Gradient */}
-        <div className="absolute inset-0 bg-radial-gradient from-white/60 via-transparent to-transparent pointer-events-none" />
+      <PaperPanel>
+        <div className="relative grid xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] xl:min-h-[640px]">
+          {/* Left: copy */}
+          <div className="relative z-20 flex flex-col px-7 pt-9 pb-2 sm:px-12 sm:pt-12 xl:pl-14 xl:pr-4 xl:py-14">
+            <Eyebrow dot="live">
+              {tx(site.profile.name, lang)} · {tx(site.profile.title, lang)}
+            </Eyebrow>
 
-        {/* Top & Left Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-20">
-          <div className="lg:col-span-7 space-y-7 max-w-2xl">
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-[#121218] leading-[1.06]">
-              {tx(h.headlinePrefix, lang)} <br />
-              {tx(h.headlineMain, lang)}
-              <span className="font-serif italic font-normal text-slate-400">
-                {tx(h.headlineHighlight, lang)}
+            <h1 className="mt-7 text-[32px] sm:text-[46px] xl:text-[48px] font-bold tracking-[-0.02em] text-[#121218] leading-[1.14]">
+              <span className="xl:whitespace-nowrap">{tx(h.headlinePrefix, lang)}</span>
+              <br />
+              <span className="xl:whitespace-nowrap">
+                {tx(h.headlineMain, lang)}
+                <span className="font-serif italic font-normal text-slate-400">{tx(h.headlineHighlight, lang)}</span>
               </span>
             </h1>
 
-            {/* Subtitle */}
-            <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-lg">
-              {tx(h.subtitle, lang)}
-            </p>
+            <p className="mt-6 max-w-md text-[15px] sm:text-[17px] leading-relaxed text-slate-600 [text-wrap:pretty]">{tx(h.subtitle, lang)}</p>
 
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              {/* Button 1: View Projects */}
+            <div className="mt-9 flex flex-wrap items-center gap-3">
               <a
                 href="#projects"
-                className="relative group overflow-hidden rounded-full px-7 py-3.5 bg-[#121218] text-white text-xs font-semibold shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center min-w-[140px] active:scale-95"
+                className="group relative overflow-hidden inline-flex items-center gap-2 rounded-full bg-[#121218] pl-6 pr-5 py-3.5 text-[13px] font-semibold text-white shadow-lg shadow-slate-900/15 transition-all hover:shadow-xl active:scale-95"
               >
-                {/* Dynamic animated glow background */}
-                <div
-                  className="absolute inset-0 bg-[url('/images/button-glow.gif')] bg-cover bg-center opacity-85 mix-blend-screen group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 pointer-events-none"
-                />
-                <span className="relative z-10 font-medium tracking-wide">
-                  {t.hero.viewProjects}
-                </span>
+                <span className="absolute inset-0 bg-[url('/images/button-glow.gif')] bg-cover bg-center opacity-70 mix-blend-screen transition-opacity group-hover:opacity-100 pointer-events-none" />
+                <span className="relative">{t.hero.viewProjects}</span>
+                <ArrowRight className="relative w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </a>
-
-              {/* Button 2: Get in touch */}
               <a
                 href="/contact"
-                className="rounded-full px-6 py-3.5 bg-white/70 hover:bg-white text-slate-800 border border-slate-300/80 text-xs font-semibold transition-all hover:scale-105 active:scale-95 shadow-xs"
+                className="inline-flex items-center rounded-full border border-slate-300/80 bg-white/60 px-6 py-3.5 text-[13px] font-semibold text-slate-800 transition-colors hover:bg-white active:scale-95"
               >
                 {t.hero.getInTouch}
               </a>
             </div>
+
+            {/* Stats */}
+            <dl className="mt-12 xl:mt-auto pt-6 grid grid-cols-3 max-w-lg border-t border-slate-300/70">
+              {h.stats.map((stat, idx) => (
+                <div key={idx} className={idx === 0 ? 'pr-4' : 'px-4 border-l border-slate-300/70'}>
+                  <dt className="sr-only">{tx(stat.label, lang)}</dt>
+                  <dd className="text-[26px] sm:text-[32px] font-bold tracking-tight text-[#121218] leading-none">{stat.value}</dd>
+                  <dd className="mt-2 text-[12px] leading-snug text-slate-500">{tx(stat.label, lang)}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
-        </div>
 
-        {/* Right Side Portrait Cutout (Desktop) */}
-        <div className="hidden lg:block absolute right-0 bottom-0 top-0 w-[46%] pointer-events-none z-10">
-          <MediaImage
-            src={site.profile.heroImage}
-            alt={tx(site.profile.name, lang)}
-            priority
-            className="w-full h-full object-contain object-bottom select-none"
-          />
-        </div>
-
-        {/* Mobile / Tablet Portrait Cutout */}
-        <div className="lg:hidden flex justify-center -mb-8 pt-2 relative z-10 pointer-events-none">
-          <div className="relative [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]">
-            <MediaImage
-              src={site.profile.heroImage}
-              alt={tx(site.profile.name, lang)}
-              priority
-              className="h-60 sm:h-72 object-contain select-none"
-            />
-          </div>
-        </div>
-
-        {/* Floating Frosted Glass Capsule (Bottom Right of Hero) */}
-        <div className="hidden sm:flex absolute bottom-8 right-8 z-30 p-5 rounded-2xl bg-black/40 backdrop-blur-xl border border-white/20 text-white max-w-[340px] shadow-2xl items-center justify-between gap-4">
-          <div className="space-y-1">
-            <span className="text-[11px] text-slate-300 font-mono block">
-              {tx(h.booking.tag, lang)}
-            </span>
-            <h4 className="text-sm font-bold text-white leading-tight">
-              {tx(h.booking.title, lang)}
-            </h4>
-            <p className="text-[11px] text-slate-300 leading-tight">
-              {tx(h.booking.desc, lang)}
-            </p>
-          </div>
-          <a
-            href="/contact"
-            className="w-10 h-10 rounded-xl bg-white text-slate-900 flex items-center justify-center shrink-0 hover:scale-110 transition-transform shadow-md"
-            title={t.hero.getInTouch}
-          >
-            <ArrowUpRight className="w-5 h-5" />
-          </a>
-        </div>
-
-        {/* Bottom Left Stats Row */}
-        <div className="pt-12 sm:pt-16 mt-8 relative z-20 flex flex-wrap gap-8 sm:gap-14 border-t border-slate-300/60 max-w-xl">
-          {h.stats.map((stat, idx) => (
-            <div key={idx} className="space-y-0.5">
-              <span className="font-sans font-bold text-2xl sm:text-3xl text-[#121218] block">
-                {stat.value}
-              </span>
-              <span className="text-xs text-slate-500 font-medium">
-                {tx(stat.label, lang)}
-              </span>
+          {/* Right: origami */}
+          <div className="relative flex flex-col">
+            <div className="relative h-[340px] sm:h-[440px] xl:h-auto xl:flex-1">
+              <OrigamiFold3D index={model} onClick={next} className="absolute inset-0 cursor-pointer" />
             </div>
-          ))}
+
+            {/* Model switcher */}
+            <div className="absolute top-5 right-5 sm:top-7 sm:right-7 z-20 flex items-center gap-2 rounded-full border border-slate-300/70 bg-white/70 backdrop-blur pl-4 pr-1.5 py-1">
+              <span className="text-[12px] font-medium text-slate-600 tabular-nums">
+                {String(model + 1).padStart(2, '0')} · {tx(ORIGAMI_MODELS[model].label, lang)}
+              </span>
+              <div className="flex items-center">
+                {ORIGAMI_MODELS.map((m, i) => (
+                  <button key={m.key} type="button" onClick={() => setModel(i)} aria-label={tx(m.label, lang)} aria-pressed={i === model} className="p-1.5">
+                    <span className={`block h-1.5 rounded-full transition-all ${i === model ? 'w-4 bg-[#121218]' : 'w-1.5 bg-slate-400/70 hover:bg-slate-500'}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="absolute right-7 top-[72px] z-20 hidden sm:block text-[12px] text-slate-500 pointer-events-none">
+              {lang === 'zh' ? '點一下紙，摺成下一個' : 'Tap the paper to fold the next one'}
+            </p>
+
+            {/* Booking */}
+            <a
+              href="/contact"
+              className="relative mx-5 mb-5 sm:mx-7 sm:mb-7 xl:m-0 xl:absolute xl:right-7 xl:bottom-7 z-20 flex items-center gap-4 rounded-2xl border border-white/15 bg-[#121218]/85 backdrop-blur-xl p-4 pl-5 text-white shadow-2xl xl:max-w-[320px] transition-transform hover:-translate-y-0.5"
+            >
+              <div className="space-y-1 min-w-0">
+                <span className="block text-[11px] font-mono text-slate-400">{tx(h.booking.tag, lang)}</span>
+                <span className="block text-sm font-bold leading-tight">{tx(h.booking.title, lang)}</span>
+                <span className="block text-[11px] leading-snug text-slate-400">{tx(h.booking.desc, lang)}</span>
+              </div>
+              <span className="w-10 h-10 shrink-0 rounded-xl bg-white text-slate-900 flex items-center justify-center">
+                <ArrowUpRight className="w-5 h-5" />
+              </span>
+            </a>
+          </div>
         </div>
-      </div>
+      </PaperPanel>
     </section>
   );
 };

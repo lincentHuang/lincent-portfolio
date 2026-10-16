@@ -28,3 +28,14 @@
 - 2026-10-15：本機作品資料同步到正式機 R2：上傳 126 個媒體檔，content.json 以本機為準（28 筆作品、媒體網址改 R2 公開網址、詢問紀錄合併），同步前已備份正式機原內容（R2 content/content.backup-1792047170597.json、data/content/r2-prod.backup-1792047170597.json）
 - 2026-10-15：Vercel 設好 R2 環境變數後重新部署（推送到 main 即自動部署），確認正式站內容與媒體改由 R2 提供
 - 2026-10-15：/projects 改為作品集總覽頁（分類篩選＋卡片網格，點卡片進詳情）（src/features/projects/components/projects-overview.tsx、src/app/projects/page.tsx、i18n zh/en）
+- 2026-10-16：用 AI 生成 4 版專業形象照（黑白高領／深藍襯衫／米白毛衣／黑白西裝）並去背，放首頁 hero 實測比較，推薦黑白高領版（public/images/headshots/）
+- 2026-10-16：改用「只換衣服與光線、臉不動」方式重生形象照（nano-banana-pro），黑白高領版最像本人，另做首頁用留白去背版（public/images/headshots/e-bw-turtleneck-hero.png）
+- 2026-10-16：首頁 hero 人像移到卡片外層，頭部突出卡片上緣、右下由卡片圓角收邊、右側加深色漸層（hero-section.tsx）；以 F 版生成側身構圖並去背裁切成 public/images/hero-portrait-f.png
+- 2026-10-16：首頁 hero 右側改為 Three.js 粒子 logo 變形動畫（logo→球體→環結→波浪面循環、滑鼠跟隨、離開畫面暫停、減少動態時靜止），取代人像（src/components/brand/logo-morph-3d.tsx、hero-section.tsx，新增 three 依賴）
+- 2026-10-16：作品相簿全螢幕燈箱改用 createPortal 掛到 body，修正上方未覆蓋的空隙（src/features/projects/components/project-showcase.tsx）
+- 2026-10-16：hero 右側改為 Three.js 摺紙：logo／紙鶴／紙船／紙飛機，點擊時先攤平成方紙再一片片摺成下一個，附切換點與提示；hero 重排為左右兩欄、身分標籤、數據列分隔線、手機版預約卡移到摺紙下方（origami-fold-3d.tsx、origami-models.ts、hero-section.tsx）
+- 2026-10-16：正式內容（R2）hero 文案改為「把複雜的需求，／摺成簡單好用的產品」與新副標（中英），寫入前備份 content/content.backup-1792159797734.json；default-site.ts 同步；hero 兩欄改在 xl 以上才並排、標題字級依寬度調整（hero-section.tsx）
+- 2026-10-16：首頁全面整理：作品移到 hero 後第一個、各區塊改用共用標題元件；優勢卡移除假按鈕改為中性色票預覽；成果改為深色數據帶並換成不和 hero 重複的實績數字；流程改為輕量編號清單；經歷改為時間軸＋可展開重點＋完整履歷連結；文案全面改為白話中英版本，CTA 去掉螢光綠（section-heading.tsx、benefits-section.tsx、why-choose-me.tsx、process-section.tsx、resume-section.tsx、featured-projects.tsx、contact-cta.tsx、page.tsx、i18n locales、default-site.ts）
+- 2026-10-16：正式內容（R2）套用首頁新文案（預約卡、優勢、成果數字、流程、經歷標題，中英）並打開首頁聯繫區，寫入前備份 content/content.backup-1792160522125.json
+- 2026-10-16：首頁下方區塊比照 hero 視覺：抽出共用紙面元件（漸層紙面板、摺痕線、標籤膠囊、斜體重點標題）；流程改為 hero 式漸層面板＋數據列分隔線＋深色預約卡；成果與聯繫區加淡摺痕與呼吸綠點標籤；標題斷行改為整段換行（paper.tsx、section-heading.tsx、process-section.tsx、hero-section.tsx 等）
+- 2026-10-16：修正聯繫區摺痕外層佔用格線導致右半邊空白（contact-cta.tsx）

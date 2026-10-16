@@ -32,9 +32,10 @@ export default async function HomePage() {
         {/* Hero 永遠顯示 */}
         <HeroSection />
 
-        {s.benefits && <BenefitsSection />}
-
+        {/* 先看作品，再看能力與成果 */}
         {s.projects && <FeaturedProjects />}
+
+        {s.benefits && <BenefitsSection />}
 
         {s.whyChooseMe && <WhyChooseMeSection />}
 

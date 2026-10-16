@@ -35,20 +35,17 @@ export const defaultSiteContent: SiteContent = {
   },
 
   hero: {
-    headlinePrefix: { zh: '以現代架構打造', en: 'Craft better' },
-    headlineMain: { zh: '頂級品牌，', en: 'brands, ' },
-    headlineHighlight: { zh: '更高效', en: 'faster' },
+    headlinePrefix: { zh: '把複雜的需求，', en: 'Folding complex needs' },
+    headlineMain: { zh: '摺成', en: 'into ' },
+    headlineHighlight: { zh: '簡單好用的產品', en: 'simple, usable products' },
     subtitle: {
-      zh: '專注於打造優雅的數位品牌、現代前端架構與極致效能體驗，賦能雄心勃勃的團隊與創作者。',
-      en: 'I design refined brands, websites, and interfaces for ambitious founders and creative teams.',
+      zh: '前端工程師，也懂設計。從設計系統、Monorepo 架構到效能優化，幫團隊把想法做成好維護、好上手的網站與 App。',
+      en: "A frontend engineer with a designer's eye. From design systems and monorepo architecture to performance tuning, I help teams turn ideas into websites and apps that are easy to maintain and easy to use.",
     },
     booking: {
-      tag: { zh: '專案預約', en: 'Select project' },
-      title: { zh: '可承接全職與專案合作', en: 'Available for projects' },
-      desc: {
-        zh: '簡述您的需求，我將在 24 小時內回覆明確方案。',
-        en: 'Share a few details, and I will get back with a clear direction.',
-      },
+      tag: { zh: '開放合作', en: 'Open to work' },
+      title: { zh: '可承接全職與專案合作', en: 'Available for full-time & projects' },
+      desc: { zh: '說說你的需求，24 小時內回覆。', en: "Tell me what you need — I'll reply within 24 hours." },
     },
     stats: [
       { value: '5+', label: { zh: '年工作經歷', en: 'Years of experience' } },
@@ -58,85 +55,85 @@ export const defaultSiteContent: SiteContent = {
   },
 
   benefits: {
-    tag: { zh: '核心優勢', en: 'Benefits' },
-    title: { zh: '探索卓越的工程與設計標準', en: 'Discover why we stand out' },
+    tag: { zh: '能幫你做的事', en: 'What I can help with' },
+    title: { zh: '從設計到上線，一個人接得住', en: 'From design to launch, in one pair of hands' },
     subtitle: {
-      zh: '打造簡潔、高響應度的前端架構與設計系統，清晰傳達產品價值，並為團隊創造實質商業回報。',
-      en: 'Designing clean, responsive websites that communicate clearly, guide visitors smoothly, and support meaningful business goals.',
+      zh: '懂設計也寫得了架構，少一層轉譯，做出來的東西就更接近原本想要的樣子。',
+      en: "I design and I engineer, so there's one less hand-off — and what ships is closer to what you had in mind.",
     },
     cards: [
       {
-        tag: { zh: '設計系統', en: 'Design System' },
-        title: { zh: '企業級 Design System 設計系統', en: 'Clear design systems' },
+        tag: { zh: '設計系統', en: 'Design system' },
+        title: { zh: '讓設計和程式說同一種語言', en: 'Design and code that speak the same language' },
         desc: {
-          zh: '基於 Radix UI 與 Storybook 打造無障礙 (a11y) 元件庫，建立團隊單一真理源，讓產品在所有端點保持極致一致性。',
-          en: 'Elevate your brand with specialized design systems, consistent tokenized palettes, and reusable headless component architectures.',
+          zh: '用 Radix UI、Storybook 與設計 Token 建一套元件庫。設計改一次，每個畫面都跟著一致，不用每頁重刻。',
+          en: 'A component library built on Radix UI, Storybook and design tokens. Change the design once and every screen stays consistent.',
         },
         chips: [],
       },
       {
         tag: { zh: '效能與 SEO', en: 'Performance & SEO' },
-        title: { zh: '為極致效能與 SEO 而生', en: 'Websites built to perform' },
+        title: { zh: '開得快，也找得到', en: 'Fast to load, easy to find' },
         desc: {
-          zh: '以嚴謹的 Core Web Vitals 調校、圖片自動 WebP 轉檔與 SSR/SSG 混合渲染，實現秒開與 SEO 最佳化。',
-          en: 'Dominate search rankings with precision-tailored architecture designed for sub-second loading and top Core Web Vitals.',
+          zh: '調校 Core Web Vitals、圖片自動轉 WebP、SSR 與 SSG 混用，頁面秒開，搜尋引擎也看得懂。',
+          en: 'Tuned Core Web Vitals, automatic WebP images and mixed SSR/SSG rendering — pages open instantly and search engines understand them.',
         },
         chips: [],
       },
       {
-        tag: { zh: '現代化前端工程架構', en: 'Modern Architecture' },
-        title: {
-          zh: 'Turborepo Monorepo ✕ Next.js 14 ✕ 原子狀態治理',
-          en: 'Production-ready execution with Next.js 14 & Turborepo',
-        },
+        tag: { zh: '工程架構', en: 'Architecture' },
+        title: { zh: '專案變大，也不會亂', en: 'Structure that holds up as things grow' },
         desc: {
-          zh: '深耕大型 Monorepo 模組化設計、Jotai 精細化原子狀態管理與 ts-morph AST 自動化，賦能團隊 100% 高效交付。',
-          en: 'Expand and flourish with modern React 18, Jotai atomic state management, TypeScript, and automated AST code generation.',
+          zh: '用 Turborepo 管理 Monorepo、Jotai 管狀態、ts-morph 自動產生程式碼。人變多、功能變多，依然好維護。',
+          en: 'Turborepo monorepos, Jotai for state and ts-morph code generation keep things maintainable as the team and features grow.',
         },
-        chips: ['Next.js', 'React', 'TypeScript', 'Turborepo', 'Jotai', 'Tailwind CSS', 'React Native', 'Storybook'],
+        chips: [
+          'Next.js',
+          'React',
+          'TypeScript',
+          'Turborepo',
+          'Jotai',
+          'Tailwind CSS',
+          'React Native',
+          'Storybook',
+        ],
       },
     ],
   },
 
   whyChooseMe: {
-    tag: { zh: '核心價值與堅持', en: 'Why choose me' },
-    title: { zh: '追求系統、數據、極簡與實用性', en: 'Design built around lasting clarity' },
-    subtitle: {
-      zh: '結合產品思維、工程架構與高保真視覺執行力，為產品打造兼具商業成效與極致體驗的現代前端體系。',
-      en: 'I bring strategy, technical architecture, and refined execution together to create meaningful digital experiences with lasting impact.',
-    },
+    tag: { zh: '做過的成果', en: 'Results' },
+    title: { zh: '做出來的，用數字說話', en: 'The numbers behind the work' },
+    subtitle: { zh: '幾個上線專案留下來的具體成果。', en: 'Concrete outcomes from projects that shipped.' },
     stats: [
       {
         value: '80+',
         title: { zh: '可重用 UI 區塊', en: 'Reusable UI blocks' },
         desc: {
-          zh: '將 80+ 個 UI 區塊封裝為獨立 npm 套件，最大化 Web 與 Native 的程式碼重用。',
-          en: 'Packaged 80+ UI blocks as independent npm packages to maximize code reuse across Web and Native.',
+          zh: '在 Seaverse 把區塊拆成獨立套件，Web 與 App 共用同一套。',
+          en: 'Split into standalone packages at Seaverse, shared by web and app.',
         },
       },
       {
-        value: '100%',
-        title: { zh: '型別安全 TypeScript', en: 'Type-safe TypeScript' },
+        value: '4 + 9',
+        title: { zh: 'App 與核心套件', en: 'Apps & core packages' },
         desc: {
-          zh: '嚴格型別與自動化 CI/CD，確保程式碼品質與可維護性。',
-          en: 'Strict typing and automated CI/CD to keep code quality and maintainability high.',
+          zh: '用 Turborepo 收進同一個 Monorepo，編譯時間大幅縮短。',
+          en: 'Unified in one Turborepo monorepo, with much shorter build times.',
         },
       },
       {
-        value: '5+ Yrs',
-        title: { zh: '大中型產品研發實戰', en: 'Full Lifecycle Exp' },
+        value: '99',
+        title: { zh: 'Lighthouse 分數', en: 'Lighthouse score' },
         desc: {
-          zh: '具備從需求分析、架構選型到效能調優完整經驗。',
-          en: 'Experienced from requirement analysis and architecture decisions to performance tuning.',
+          zh: 'kryptoGO 官網改版後，效能與 SEO 接近滿分。',
+          en: "kryptoGO's redesigned site scored near-perfect on performance and SEO.",
         },
       },
       {
-        value: '9',
-        title: { zh: '核心套件 Monorepo 整合', en: 'Core packages in one monorepo' },
-        desc: {
-          zh: '以 Turborepo 將 4 個應用程式與 9 個核心套件整合為單一 Monorepo。',
-          en: '4 apps + 9 core packages unified with Turborepo.',
-        },
+        value: '50,000+',
+        title: { zh: '活動互動次數', en: 'Campaign interactions' },
+        desc: { zh: 'Web3 心理測驗活動上線期間累積的參與。', en: 'Collected during the Web3 personality-quiz campaign.' },
       },
     ],
   },
@@ -177,53 +174,53 @@ export const defaultSiteContent: SiteContent = {
   },
 
   process: {
-    tag: { zh: '研發流程', en: 'Process' },
-    title: { zh: '嚴謹高效的六步全流程推進', en: 'How the process flows with clarity' },
+    tag: { zh: '合作流程', en: 'How we work' },
+    title: { zh: '六個步驟，從想法到上線', en: 'Six steps from idea to launch' },
     subtitle: {
-      zh: '透明、結構化的協作流程，確保專案從概念雛形平穩抵達高品質生產交付。',
-      en: 'A clear and collaborative workflow that moves each project from first idea to polished final result.',
+      zh: '每一步都讓你知道做到哪、下一步是什麼，不會做到一半才發現方向不對。',
+      en: "You always know where things stand and what's next — no surprises halfway through.",
     },
     steps: [
       {
-        title: { zh: '需求洞察與定義 (Discovery)', en: 'Discovery' },
+        title: { zh: '釐清需求', en: 'Discovery' },
         desc: {
-          zh: '深入理解專案商業目標、目標用戶畫像、關鍵指標與架構約束。',
-          en: 'Understanding business goals, user personas, performance targets, and architectural constraints.',
+          zh: '先弄清楚要幫誰解決什麼問題、怎樣算成功，再談怎麼做。',
+          en: "Start with who it's for, what problem it solves and what success looks like.",
         },
       },
       {
-        title: { zh: '架構選型與策略 (Strategy)', en: 'Strategy' },
+        title: { zh: '規劃架構', en: 'Strategy' },
         desc: {
-          zh: '制定技術選型（Monorepo、狀態治理、資料庫串接與渲染策略）。',
-          en: 'Defining technical stack, monorepo structure, state management, and rendering strategy.',
+          zh: '依規模選技術：要不要 Monorepo、狀態怎麼管、資料怎麼接、頁面怎麼渲染。',
+          en: 'Choose the stack to fit the scale: monorepo or not, state, data and rendering.',
         },
       },
       {
-        title: { zh: '設計系統規範 (Direction)', en: 'Direction' },
+        title: { zh: '定設計規範', en: 'Design system' },
         desc: {
-          zh: '建立 Design Tokens、色票、排版規範與無障礙 Headless 元件骨幹。',
-          en: 'Shaping visual tokens, typography rules, and headless a11y component foundations.',
+          zh: '定好色彩、字級、間距與基礎元件，之後每一頁都照這套走。',
+          en: 'Set colors, type, spacing and base components so every page follows the same rules.',
         },
       },
       {
-        title: { zh: '高保真工程研發 (Architecture & Build)', en: 'Architecture & Build' },
+        title: { zh: '開發與互動', en: 'Build' },
         desc: {
-          zh: '嚴格落實 TypeScript 型別安全、自適應響應式佈局與細緻微互動。',
-          en: 'Executing type-safe components, fluid responsive layouts, and polished micro-interactions.',
+          zh: '型別寫好、響應式版面和細節互動一起做到位。',
+          en: 'Typed components, responsive layouts and the small interactions, done together.',
         },
       },
       {
-        title: { zh: '極致效能調優 (Performance)', en: 'Performance' },
+        title: { zh: '效能調校', en: 'Performance' },
         desc: {
-          zh: 'Core Web Vitals 調校、圖片自動 WebP 轉檔、首屏載入壓至 1 秒內。',
-          en: 'Tuning Core Web Vitals, automated WebP image pipelines, and sub-second page loads.',
+          zh: '調 Core Web Vitals、壓圖片、拆載入，讓首屏 1 秒內出來。',
+          en: 'Tune Core Web Vitals, compress images and split loading so the first screen shows within a second.',
         },
       },
       {
-        title: { zh: '測試交付與上線 (Delivery)', en: 'Delivery' },
+        title: { zh: '測試與交付', en: 'Delivery' },
         desc: {
-          zh: '完備的邊界測試、CI/CD 自動化部署與文件交接，確保穩定生產就緒。',
-          en: 'Automated CI/CD deployment, boundary test validation, and launch-ready documentation.',
+          zh: '測試、自動部署、留好文件，交接後團隊也接得下去。',
+          en: 'Tests, automated deploys and docs, so the team can carry on after hand-off.',
         },
       },
     ],
@@ -265,11 +262,11 @@ export const defaultSiteContent: SiteContent = {
   },
 
   experience: {
-    tag: { zh: '經歷與技能', en: 'Experience' },
-    title: { zh: '專業經歷與深厚技術積累', en: 'Career journey & expertise' },
+    tag: { zh: '經歷', en: 'Experience' },
+    title: { zh: '這幾年做過的事', en: "Where I've worked" },
     subtitle: {
-      zh: '擁有 5+ 年大中型產品研發實戰，具備從需求分析、架構選型到效能調優的完整落地經驗。',
-      en: '5+ years of full lifecycle frontend engineering, architecture design, and performance tuning.',
+      zh: '從自己創業、幫傳產做數位轉型，到 Web3 與大型平台，一路從設計做到前端架構。',
+      en: 'From running my own business and taking a manufacturer online to Web3 and large platforms — from design all the way to frontend architecture.',
     },
     items: [
       {
