@@ -16,6 +16,7 @@ import { MediaImage } from '../media/media-image';
 import { useI18n } from '../../i18n';
 import { ProjectBadgeIcon, getShortProjectTitle } from '../../features/projects/components/project-badge-icon';
 import { usePageTransition } from '../providers/page-transition-provider';
+import { useSmoothScroll } from '../providers/smooth-scroll-provider';
 import {
   Globe,
   Search,
@@ -84,7 +85,13 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
   const { transitionTo } = usePageTransition();
 
   const isProjects = pathname.startsWith('/projects');
+  const isHome = pathname === '/';
   const [searchQuery, setSearchQuery] = useState('');
+  const { scrollTo } = useSmoothScroll();
+
+  // 首頁：側欄只是快速導航，active 跟著主頁捲到哪個作品（scroll-spy）
+  const [spyId, setSpyId] = useState<string | null>(null);
+  const spyLockUntilRef = useRef(0);
 
   // Scroll container and card refs for collapse animation
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -103,6 +110,41 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
     }
     return selectedProject?.id || (projects.length > 0 ? projects[0].id : '');
   }, [activeProjectId, pathname, selectedProject, projects]);
+
+  // 實際高亮的作品：首頁看 scroll-spy，作品頁看網址
+  const highlightedId = isHome ? spyId : isProjects ? currentActiveId : null;
+
+  useEffect(() => {
+    if (!isHome) return;
+    let raf: number | null = null;
+    const update = () => {
+      raf = null;
+      if (Date.now() < spyLockUntilRef.current) return;
+      const blocks = Array.from(document.querySelectorAll<HTMLElement>('[data-work-id]'));
+      // 以視窗 35% 高度為判斷線：最後一個頂端越過判斷線、且底部還沒離開的作品
+      const line = window.innerHeight * 0.35;
+      let next: string | null = null;
+      for (const el of blocks) {
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= line && rect.bottom > line) {
+          next = el.dataset.workId || null;
+          break;
+        }
+      }
+      setSpyId((prev) => (prev === next ? prev : next));
+    };
+    const onScroll = () => {
+      if (raf === null) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (raf !== null) cancelAnimationFrame(raf);
+    };
+  }, [isHome]);
 
   // Filter projects by search query
   const filteredProjects = useMemo(() => {
@@ -166,7 +208,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
 
   // Smart active card scrolling and centering
   const scrollToActiveProject = useCallback((smooth: boolean = true, targetId?: string) => {
-    const targetProjectId = targetId || currentActiveId;
+    const targetProjectId = targetId || highlightedId;
     const container = scrollContainerRef.current;
     if (!container || !targetProjectId) return;
 
@@ -212,7 +254,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
       persistScrollTop(targetScrollTop);
       updateCardTransforms();
     }
-  }, [currentActiveId, filteredProjects, updateCardTransforms]);
+  }, [highlightedId, filteredProjects, updateCardTransforms]);
 
   const handleSelectProject = (proj: Project) => {
     setSelectedProject(proj);
@@ -220,6 +262,15 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
 
     // Smoothly scroll to clicked project card immediately
     scrollToActiveProject(true, proj.id);
+
+    // 首頁：捲到長頁上的作品區塊，不換頁；捲動途中先鎖住 scroll-spy，避免高亮一路跳過中間作品
+    const block = isHome ? document.getElementById(`work-${proj.id}`) : null;
+    if (block) {
+      setSpyId(proj.id);
+      spyLockUntilRef.current = Date.now() + 1400;
+      scrollTo(block, { offset: -24, duration: 1.2 });
+      return;
+    }
 
     if (pathname !== `/projects/${proj.id}`) {
       transitionTo(`/projects/${proj.id}`);
@@ -236,6 +287,9 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
       rafIdRef.current = null;
     });
   };
+
+  const initialTargetRef = useRef({ isProjects, currentActiveId, scrollToActiveProject });
+  initialTargetRef.current = { isProjects, currentActiveId, scrollToActiveProject };
 
   // Initialize independent nested Lenis instance for Sidebar
   useEffect(() => {
@@ -269,8 +323,9 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
 
       // Position sidebar to active project or restore saved scroll position
       requestAnimationFrame(() => {
-        if (isProjects && currentActiveId) {
-          scrollToActiveProject(false);
+        const initial = initialTargetRef.current;
+        if (initial.isProjects && initial.currentActiveId) {
+          initial.scrollToActiveProject(false, initial.currentActiveId);
         } else {
           const savedTop = getSavedScrollTop();
           if (savedTop > 0 && container) {
@@ -296,28 +351,26 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
       }
       lenisRef.current = null;
     };
-  }, [updateCardTransforms, isProjects, currentActiveId, scrollToActiveProject, setSidebarScrollPos]);
+  }, [updateCardTransforms, setSidebarScrollPos]);
 
-  // Handle dynamic route changes when already mounted
+  // 高亮的作品改變時（換頁或首頁捲動），把側欄卡片捲到中間
   useEffect(() => {
-    if (!initialPositionedRef.current) return;
-    if (isProjects && currentActiveId) {
-      scrollToActiveProject(true);
-    }
-  }, [currentActiveId, isProjects, scrollToActiveProject]);
+    if (!initialPositionedRef.current || !highlightedId) return;
+    scrollToActiveProject(true);
+  }, [highlightedId, scrollToActiveProject]);
 
   // Handle case where projects were populated asynchronously
   const previousProjectsLengthRef = useRef(filteredProjects.length);
   useEffect(() => {
     if (previousProjectsLengthRef.current === 0 && filteredProjects.length > 0) {
-      if (isProjects && currentActiveId) {
+      if (highlightedId) {
         requestAnimationFrame(() => {
           scrollToActiveProject(false);
         });
       }
     }
     previousProjectsLengthRef.current = filteredProjects.length;
-  }, [filteredProjects.length, isProjects, currentActiveId, scrollToActiveProject]);
+  }, [filteredProjects.length, highlightedId, scrollToActiveProject]);
 
   useEffect(() => {
     cardRefs.current = cardRefs.current.slice(0, filteredProjects.length);
@@ -382,8 +435,8 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
             onClick={onItemClick}
             className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
               isProjects
-                ? 'bg-[#121218] text-white border-[#121218]'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                ? 'bg-white text-slate-900 border-slate-300 shadow-sm'
+                : 'bg-white/55 text-slate-600 border-slate-200/70 hover:bg-white'
             }`}
           >
             <FolderOpen className="w-3.5 h-3.5" />
@@ -394,8 +447,8 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
             onClick={onItemClick}
             className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all ${
               pathname.startsWith('/about')
-                ? 'bg-[#121218] text-white border-[#121218]'
-                : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                ? 'bg-white text-slate-900 border-slate-300 shadow-sm'
+                : 'bg-white/55 text-slate-600 border-slate-200/70 hover:bg-white'
             }`}
           >
             <User className="w-3.5 h-3.5" />
@@ -434,7 +487,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
       >
         <div ref={contentRef} className="py-2 flex flex-col gap-2.5 w-full">
           {filteredProjects.map((proj, idx) => {
-            const isActive = isProjects && proj.id === currentActiveId;
+            const isActive = proj.id === highlightedId;
             const title = getShortProjectTitle(proj, lang);
             const summary = isEn ? proj.summaryEn || proj.summary : proj.summary;
             const tags = (proj.techStack || []).slice(0, 3);
@@ -449,14 +502,17 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
                 style={{
                   zIndex: filteredProjects.length - idx + 10,
                 }}
-                className={`group shrink-0 text-left w-full rounded-2xl p-3.5 transition-colors duration-150 border relative overflow-hidden select-none will-change-transform ${isActive
-                    ? 'bg-[#121218] text-white border-[#121218] shadow-md'
-                    : 'bg-white hover:bg-slate-50 text-slate-800 border-slate-200 hover:border-slate-300 shadow-xs hover:shadow-sm'
+                aria-current={isActive ? 'true' : undefined}
+                className={`group shrink-0 text-left w-full rounded-2xl p-3.5 transition-[background-color,border-color,box-shadow] duration-300 border relative overflow-hidden select-none will-change-transform ${isActive
+                    ? 'bg-white text-slate-900 border-slate-300 shadow-sm'
+                    : 'bg-white/55 hover:bg-white text-slate-800 border-slate-200/70 hover:border-slate-300'
                   }`}
               >
-                {isActive && (
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-white/10 to-transparent pointer-events-none rounded-tr-2xl" />
-                )}
+                {/* 柔和的 active 標記：左側細色條，不用整塊反黑 */}
+                <span
+                  aria-hidden
+                  className={`absolute left-0 top-3.5 bottom-3.5 w-[3px] rounded-r-full bg-lime-500 transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'}`}
+                />
 
                 <div className="flex items-start gap-3">
                   {proj.coverImage ? (
@@ -473,8 +529,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-2">
                       <h4
-                        className={`font-sans font-bold text-sm tracking-tight truncate ${isActive ? 'text-white' : 'text-slate-900 group-hover:text-black'
-                          }`}
+                        className="font-sans font-bold text-sm tracking-tight truncate text-slate-900 group-hover:text-black"
                       >
                         {title}
                       </h4>
@@ -486,8 +541,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
                     </div>
 
                     <p
-                      className={`text-xs font-normal leading-relaxed line-clamp-2 ${isActive ? 'text-slate-300' : 'text-slate-500'
-                        }`}
+                      className="text-xs font-normal leading-relaxed line-clamp-2 text-slate-500"
                     >
                       {summary}
                     </p>
@@ -496,10 +550,7 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
                       {tags.map((t) => (
                         <span
                           key={t}
-                          className={`text-[10px] font-medium px-2 py-0.5 rounded-md border transition-colors ${isActive
-                              ? 'bg-white/10 border-white/15 text-slate-200'
-                              : 'bg-slate-50 border-slate-200 text-slate-600'
-                            }`}
+                          className="text-[10px] font-medium px-2 py-0.5 rounded-md border bg-slate-50 border-slate-200 text-slate-600"
                         >
                           {t}
                         </span>

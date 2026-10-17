@@ -47,6 +47,9 @@ export const en = {
     liveDemo: 'Live Demo',
     challengesSolved: 'Challenges Solved',
     noContent: 'No markdown content available.',
+    expandStory: 'Read the details',
+    collapseStory: 'Collapse',
+    fullCase: 'Full case study',
   },
   contact: {
     tag: 'Contact',

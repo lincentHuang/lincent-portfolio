@@ -47,6 +47,9 @@ export const zh = {
     liveDemo: '線上體驗',
     challengesSolved: '關鍵痛點與解決方案 (Challenges Solved)',
     noContent: '尚無詳細 Markdown 內容說明。',
+    expandStory: '看詳細介紹',
+    collapseStory: '收合介紹',
+    fullCase: '看完整案例',
   },
   contact: {
     tag: '聯繫洽談',

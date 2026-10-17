@@ -39,3 +39,5 @@
 - 2026-10-16：正式內容（R2）套用首頁新文案（預約卡、優勢、成果數字、流程、經歷標題，中英）並打開首頁聯繫區，寫入前備份 content/content.backup-1792160522125.json
 - 2026-10-16：首頁下方區塊比照 hero 視覺：抽出共用紙面元件（漸層紙面板、摺痕線、標籤膠囊、斜體重點標題）；流程改為 hero 式漸層面板＋數據列分隔線＋深色預約卡；成果與聯繫區加淡摺痕與呼吸綠點標籤；標題斷行改為整段換行（paper.tsx、section-heading.tsx、process-section.tsx、hero-section.tsx 等）
 - 2026-10-16：修正聯繫區摺痕外層佔用格線導致右半邊空白（contact-cta.tsx）
+- 2026-10-17：首頁改為 ooze.design 式長頁：精選輪播換成全部作品依序排開（標題、相簿預覽限高、摘要＋數據，痛點與完整故事可展開收合，另有「看完整案例」）；側欄在首頁改為快速導航（點選平滑捲到作品、scroll-spy 跟著捲動更新 active），active 由整塊反黑改為白底＋左側淡綠細條；修正側欄 Lenis 在 active 變動時重建（home-project-stream.tsx、global-sidebar.tsx、page.tsx、i18n zh/en，移除 featured-projects.tsx）
+- 2026-10-17：首頁作品長頁改為相簿全部直接顯示（取消列數與高度上限），摘要、數據、痛點與完整故事全部收進「看詳細介紹」展開區（home-project-stream.tsx、i18n zh/en）

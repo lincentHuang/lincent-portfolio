@@ -4,7 +4,7 @@ import { tx } from '../content/types';
 import { FrontendShell } from '../components/layouts/frontend-shell';
 import { HeroSection } from '../features/portfolio/components/hero-section';
 import { BenefitsSection } from '../features/portfolio/components/benefits-section';
-import { FeaturedProjects } from '../features/projects/components/featured-projects';
+import { HomeProjectStream } from '../features/projects/components/home-project-stream';
 import { WhyChooseMeSection } from '../features/portfolio/components/why-choose-me';
 import { ServicesSection } from '../features/portfolio/components/services-section';
 import { ProcessSection } from '../features/portfolio/components/process-section';
@@ -32,8 +32,8 @@ export default async function HomePage() {
         {/* Hero 永遠顯示 */}
         <HeroSection />
 
-        {/* 先看作品，再看能力與成果 */}
-        {s.projects && <FeaturedProjects />}
+        {/* 先看作品（全部作品依序排開，側欄可快速跳到對應作品），再看能力與成果 */}
+        {s.projects && <HomeProjectStream />}
 
         {s.benefits && <BenefitsSection />}
 
