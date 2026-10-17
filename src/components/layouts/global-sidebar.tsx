@@ -29,6 +29,9 @@ import {
 // Module-level cache to preserve scroll position during client-side route transitions
 let cachedSidebarScrollTop: number | null = null;
 
+// 從其他頁面點側欄作品時，回到首頁後要捲到的作品 id
+let pendingWorkId: string | null = null;
+
 const getSavedScrollTop = (): number => {
   if (typeof window === 'undefined') return 0;
   if (cachedSidebarScrollTop !== null) return cachedSidebarScrollTop;
@@ -272,10 +275,32 @@ export const GlobalSidebar: React.FC<GlobalSidebarProps> = ({
       return;
     }
 
-    if (pathname !== `/projects/${proj.id}`) {
-      transitionTo(`/projects/${proj.id}`);
+    // 其他頁面：回首頁並直接定位到該作品，不再開作品詳頁
+    if (!isHome) {
+      pendingWorkId = proj.id;
+      transitionTo('/');
+      return;
     }
+
+    // 首頁但作品區塊被關閉時，退回作品詳頁
+    transitionTo(`/projects/${proj.id}`);
   };
+
+  // 從其他頁面點側欄回到首頁後，趁換頁布幕還蓋著時直接定位到該作品
+  useEffect(() => {
+    if (!isHome || !pendingWorkId) return;
+    const id = pendingWorkId;
+    // 計時器觸發時才清除，避免 StrictMode 重跑 effect 時目標先被清掉
+    const timer = setTimeout(() => {
+      pendingWorkId = null;
+      const block = document.getElementById(`work-${id}`);
+      if (!block) return;
+      setSpyId(id);
+      spyLockUntilRef.current = Date.now() + 600;
+      scrollTo(block, { offset: -24, immediate: true });
+    }, 120);
+    return () => clearTimeout(timer);
+  }, [isHome, scrollTo]);
 
   const handleScroll = () => {
     if (scrollContainerRef.current) {
