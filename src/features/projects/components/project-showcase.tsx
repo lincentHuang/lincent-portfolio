@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useAtom } from 'jotai';
 import { selectedProjectAtom, type Project } from '../../../store/atoms';
 import { useProjects } from '../../../content/content-provider';
@@ -338,7 +339,7 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
       <ProjectPager projects={projects} currentId={activeProject.id} />
 
       {/* 5. LIGHTBOX FULLSCREEN ZOOM & MULTI-PHOTO GALLERY MODAL */}
-      {lightboxIndex !== null && (
+      {lightboxIndex !== null && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setLightboxIndex(null)}
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl flex flex-col justify-between p-4 sm:p-8 select-none"
@@ -441,7 +442,8 @@ export const ProjectShowcase: React.FC<ProjectShowcaseProps> = ({
               ))}
             </div>
           )}
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
