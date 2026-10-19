@@ -9,6 +9,20 @@
         "dev"
       ],
       "port": 3012
+    },
+    {
+      "name": "portfolio-local-content",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "R2_BUCKET=",
+        "R2_ACCOUNT_ID=",
+        "npx",
+        "next",
+        "dev",
+        "-p",
+        "3013"
+      ],
+      "port": 3013
     }
   ]
 }

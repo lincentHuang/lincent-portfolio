@@ -42,3 +42,5 @@
 - 2026-10-17：首頁改為 ooze.design 式長頁：精選輪播換成全部作品依序排開（標題、相簿預覽限高、摘要＋數據，痛點與完整故事可展開收合，另有「看完整案例」）；側欄在首頁改為快速導航（點選平滑捲到作品、scroll-spy 跟著捲動更新 active），active 由整塊反黑改為白底＋左側淡綠細條；修正側欄 Lenis 在 active 變動時重建（home-project-stream.tsx、global-sidebar.tsx、page.tsx、i18n zh/en，移除 featured-projects.tsx）
 - 2026-10-17：首頁作品長頁改為相簿全部直接顯示（取消列數與高度上限），摘要、數據、痛點與完整故事全部收進「看詳細介紹」展開區（home-project-stream.tsx、i18n zh/en）
 - 2026-10-18：側欄點作品一律不開作品詳頁：在其他頁面點選時回首頁並直接定位到該作品區塊（global-sidebar.tsx）
+- 2026-10-20：盤點 28 個作品的圖片與文案缺口，整理圖片／影片／文案規格（docs/作品素材規格.md）
+- 2026-10-20：8 個個人產品補實機截圖與 MP4（聲動看板、台北騎士、派對遊戲、聊聊好嗎、智帳君、貼貼公布欄、特物情報局、小俠大亂鬥）；26 個上架作品補齊中英四段式故事、痛點、亮點；移除誤放的個人照與 Cms Playground 示意圖；調整作品排序（data/content/content.json、data/media/，尚未同步正式站）
