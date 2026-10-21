@@ -12,7 +12,7 @@ import { SectionHeading } from '../../portfolio/components/section-heading';
 import { MarkdownRenderer } from './markdown-renderer';
 import { GalleryRowView, slotCountOf } from './gallery-row-view';
 import { getShortProjectTitle } from './project-badge-icon';
-import { ArrowUpRight, ChevronDown } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ExternalLink } from 'lucide-react';
 
 /** 取出有圖的相簿列（全部顯示）；兩欄列只剩一張圖時退回整列 */
 const previewRows = (p: Project): GalleryRow[] =>
@@ -38,6 +38,8 @@ const ProjectBlock: React.FC<{ project: Project; index: number }> = ({ project: 
   const hasStory = Boolean(summary) || metrics.length > 0 || painPoints.length > 0 || Boolean(content);
   const rows = previewRows(p);
   const goDetail = () => transitionTo(`/projects/${p.id}`);
+  // 官網類作品叫「前往網站」，App／遊戲／活動頁叫「線上體驗」
+  const isSite = /website|e-commerce|brand experience|seo/i.test(p.category || '');
 
   return (
     <article id={`work-${p.id}`} data-work-id={p.id} className="scroll-mt-6 py-12 sm:py-16 border-t border-slate-200/80 first:border-t-0">
@@ -138,6 +140,17 @@ const ProjectBlock: React.FC<{ project: Project; index: number }> = ({ project: 
           {t.projects.fullCase}
           <ArrowUpRight className="w-4 h-4" />
         </button>
+        {p.demoUrl && (
+          <a
+            href={p.demoUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full bg-[#121218] px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-black"
+          >
+            {isSite ? t.projects.visitSite : t.projects.liveDemo}
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        )}
       </div>
     </article>
   );

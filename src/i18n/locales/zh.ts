@@ -50,11 +50,12 @@ export const zh = {
     expandStory: '看詳細介紹',
     collapseStory: '收合介紹',
     fullCase: '看完整案例',
+    visitSite: '前往網站',
   },
   contact: {
     tag: '聯繫洽談',
     titlePrefix: '有想法了嗎？',
-    titleItalic: '一起把它摺出來',
+    titleItalic: '一起把它做出來',
     subtitle: '無論是全職資深前端職缺、架構諮詢或專案合作，歡迎直接填寫表單或透過 Email 聯繫，我會在 24 小時內回覆。',
     emailLabel: '電子郵件 (Email) *',
     nameLabel: '您的姓名 *',

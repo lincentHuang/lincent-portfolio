@@ -46,3 +46,6 @@
 - 2026-10-20：8 個個人產品補實機截圖與 MP4（聲動看板、台北騎士、派對遊戲、聊聊好嗎、智帳君、貼貼公布欄、特物情報局、小俠大亂鬥）；26 個上架作品補齊中英四段式故事、痛點、亮點；移除誤放的個人照與 Cms Playground 示意圖；調整作品排序（data/content/content.json、data/media/）；已同步正式站 R2（26 個媒體檔，寫入前備份 content/content.backup-1792580013766.json）
 - 2026-10-20：新素材 41 個檔案上傳 R2，作品內容寫入正式站（寫入前備份 R2 content/content.backup-*.json），推送 main 觸發 Vercel 重新部署，正式站確認新排序、影片與圖片正常
 - 2026-10-21：特物情報局換上新版作品集素材（新封面、52 秒動態介紹影片、10 張簡報圖），數據更新為 356 commit／134 測試檔／20 模組；小俠大亂鬥相簿最上方加入 13 位英雄超必殺技合輯影片（壓到 1600 寬、7.9MB）（data/content/content.json、data/media/）；已同步正式站 R2（26 個媒體檔，寫入前備份 content/content.backup-1792580013766.json）
+- 2026-10-21：首頁每個作品的「看完整案例」後方加上外連按鈕（有 demoUrl 才顯示；官網類顯示「前往網站」，App／遊戲／活動頁顯示「線上體驗」），13 個連結已確認仍可連線（home-project-stream.tsx、i18n zh/en）
+- 2026-10-21：文案拿掉「摺」的比喻（hero 改「做成簡單好用的產品」／Turning complex needs、聯繫區「一起把它做出來」、摺紙提示改「點一下紙，換下一個造型」）；hero 的 logo 改為真實摺紙：正黑背白方紙依序往後對摺兩次成長條、摺上端與斜角、下端斜摺轉出腳、尾端往後摺成三角形、最後掀起三角，開場也會播一次；只改本機內容，正式站 R2 尚未同步（origami-logo-fold.ts、origami-fold-3d.tsx、hero-section.tsx、default-site.ts、data/content/content.json、i18n zh/en）
+- 2026-10-21：首頁 hero 新文案同步正式站 R2（寫入前備份 content/content.backup-1792595400063.json），程式碼推上 main 觸發 Vercel 部署

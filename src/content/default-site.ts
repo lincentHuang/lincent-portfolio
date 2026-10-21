@@ -35,8 +35,8 @@ export const defaultSiteContent: SiteContent = {
   },
 
   hero: {
-    headlinePrefix: { zh: '把複雜的需求，', en: 'Folding complex needs' },
-    headlineMain: { zh: '摺成', en: 'into ' },
+    headlinePrefix: { zh: '把複雜的需求，', en: 'Turning complex needs' },
+    headlineMain: { zh: '做成', en: 'into ' },
     headlineHighlight: { zh: '簡單好用的產品', en: 'simple, usable products' },
     subtitle: {
       zh: '前端工程師，也懂設計。從設計系統、Monorepo 架構到效能優化，幫團隊把想法做成好維護、好上手的網站與 App。',

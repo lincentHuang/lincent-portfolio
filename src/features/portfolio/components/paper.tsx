@@ -56,7 +56,7 @@ export const Eyebrow: React.FC<{ children: React.ReactNode; dot?: 'live' | 'stat
 
 /**
  * 標題的斜體重點：用 *文字* 標出重點；沒有標記時，中文標題取最後一個「，」之後的子句。
- * 讓下方區塊標題和 hero 的「摺成 *簡單好用的產品*」同一種語氣。
+ * 讓下方區塊標題和 hero 的「做成 *簡單好用的產品*」同一種語氣。
  */
 export const Headline: React.FC<{ text: string; highlightClassName?: string }> = ({ text, highlightClassName = 'text-slate-400' }) => {
   const hl = (s: string, key?: number) => (

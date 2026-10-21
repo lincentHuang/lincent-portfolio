@@ -3,11 +3,13 @@
 import React from 'react';
 import * as THREE from 'three';
 import { ORIGAMI_MODELS, type OrigamiKey } from './origami-models';
+import { buildLogoFold } from './origami-logo-fold';
 
 /**
  * 首頁 hero 的 Three.js 摺紙：同一張紙在 logo、紙鶴、紙船、紙飛機之間變形。
- * 每個模型都切成相同數量的三角面；切換時先攤回一張方紙，再一面一面摺成下一個模型。
- * 點一下就摺成下一個，偏好減少動態時直接切換、不播摺紙過程。
+ * 紙鶴、紙船、紙飛機切成相同數量的三角面，切換時先攤回一張方紙，再一面一面變成下一個模型；
+ * logo 則照真實摺紙步驟一摺一摺完成（origami-logo-fold.ts），開場也會從方紙摺一次。
+ * 偏好減少動態時直接切換、不播摺紙過程。
  */
 
 type V = [number, number, number];
@@ -17,6 +19,9 @@ type Tri = [V, V, V];
 const FACES = 96;
 const UNFOLD_S = 0.9;
 const FOLD_S = 1.35;
+/** logo 每一摺的秒數（摺）與攤開時每一摺的秒數 */
+const LOGO_STEP_S = 0.62;
+const LOGO_UNSTEP_S = 0.16;
 /** 每片紙開始摺的時間錯開比例，讓摺紙一片接一片發生 */
 const STAGGER = 0.45;
 
@@ -30,24 +35,9 @@ function faceCamera(tris: Tri[]): Tri[] {
 
 // ---------- 模型（單位約 3，y 向上、+z 朝鏡頭） ----------
 
-/** logo：與 lincent-logo.svg 相同比例，右側三角翻摺出來 */
-function logoModel(): Tri[] {
-  const s = 3.1 / 248;
-  const p = (x: number, y: number, z = 0): V => [(x - 111) * s, -(y - 124) * s, z];
-  const tris: Tri[] = [
-    [p(0, 8), p(100, 44), p(100, 240)],
-    [p(0, 8), p(100, 240), p(0, 204)],
-  ];
-  // 翻摺的三角：以 x=104 為摺線，往鏡頭方向掀起約 35°
-  const hinge = 104;
-  const lift = (x: number, y: number): V => {
-    const d = (x - hinge) * s;
-    const a = (35 * Math.PI) / 180;
-    return [(hinge - 111) * s + d * Math.cos(a), -(y - 124) * s, d * Math.sin(a)];
-  };
-  tris.push([lift(108, 134), lift(218, 160), lift(108, 240)]);
-  return faceCamera(tris);
-}
+/** logo 的 svg 單位換算成場景單位；方紙邊長固定 SHEET_SIZE，兩種模型在攤平時能接上 */
+const LOGO_SCALE = 3.1 / 248;
+const SHEET_SIZE = 3;
 
 function planeModel(): Tri[] {
   const N: V = [1.75, 0.05, 0];
@@ -134,7 +124,7 @@ function craneModel(): Tri[] {
 
 /** 攤平的方紙，用來當兩個模型之間的過渡 */
 function sheetModel(): Tri[] {
-  const h = 1.35;
+  const h = SHEET_SIZE / 2;
   return [
     [[-h, -h, 0], [h, -h, 0], [h, h, 0]],
     [[-h, -h, 0], [h, h, 0], [-h, h, 0]],
@@ -199,7 +189,8 @@ const POSES: Record<OrigamiKey, [number, number]> = {
 };
 
 const BUILDERS: Record<OrigamiKey, () => Tri[]> = {
-  logo: logoModel,
+  // logo 走真實摺紙網格，這裡只是佔位
+  logo: sheetModel,
   crane: craneModel,
   boat: boatModel,
   plane: planeModel,
@@ -268,8 +259,18 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
     };
     const paper = new THREE.Mesh(geo, mat);
     paper.castShadow = true;
+
+    // logo 用另一份網格：一張方紙切成摺線分隔的紙片，照步驟翻動
+    const LOGO = ORIGAMI_MODELS.findIndex((m) => m.key === 'logo');
+    const fold = buildLogoFold(LOGO_SCALE, SHEET_SIZE);
+    const logoPositions = new Float32Array(fold.triangles * 9);
+    const logoGeo = new THREE.BufferGeometry();
+    logoGeo.setAttribute('position', new THREE.BufferAttribute(logoPositions, 3));
+    const logoMesh = new THREE.Mesh(logoGeo, mat);
+    logoMesh.castShadow = true;
+
     const group = new THREE.Group();
-    group.add(paper);
+    group.add(paper, logoMesh);
     scene.add(group);
 
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(12, 12), new THREE.ShadowMaterial({ opacity: 0.12 }));
@@ -305,11 +306,62 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
     const io = new IntersectionObserver(([entry]) => (visible = entry.isIntersecting));
     io.observe(host);
 
-    // 摺紙狀態：from（起點快照）→ sheet → to
+    // 動畫排程：依序播放的片段；三角面模型之間用內插，logo 用真實摺紙進度 F（0 = 方紙）
+    type Seg = { kind: 'lerp'; a: Float32Array; b: Float32Array; dur: number; lift: number } | { kind: 'logo'; from: number; to: number; dur: number };
+    let plan: Seg[] = [];
+    let segStart = 0;
     let shown = targetRef.current;
-    let from = new Float32Array(positions);
-    let to = models[shown];
-    let start = -1;
+    let logoF = fold.steps;
+    let mode: 'tri' | 'logo' = shown === LOGO ? 'logo' : 'tri';
+
+    const setMode = (m: typeof mode) => {
+      mode = m;
+      paper.visible = m === 'tri';
+      logoMesh.visible = m === 'logo';
+    };
+    const writeLogo = (F: number) => {
+      logoF = F;
+      fold.write(F, logoPositions);
+      logoGeo.attributes.position.needsUpdate = true;
+      logoGeo.computeVertexNormals();
+    };
+
+    const replan = () => {
+      const target = shown;
+      if (mode === 'logo') {
+        plan =
+          target === LOGO
+            ? [{ kind: 'logo', from: logoF, to: fold.steps, dur: (fold.steps - logoF) * LOGO_STEP_S }]
+            : [
+                { kind: 'logo', from: logoF, to: 0, dur: logoF * LOGO_UNSTEP_S },
+                { kind: 'lerp', a: sheet, b: models[target], dur: FOLD_S, lift: -1 },
+              ];
+      } else {
+        const snap = new Float32Array(positions);
+        plan = [
+          { kind: 'lerp', a: snap, b: sheet, dur: UNFOLD_S, lift: 1 },
+          target === LOGO
+            ? { kind: 'logo', from: 0, to: fold.steps, dur: fold.steps * LOGO_STEP_S }
+            : { kind: 'lerp', a: sheet, b: models[target], dur: FOLD_S, lift: -1 },
+        ];
+      }
+      segStart = -1;
+    };
+
+    setMode(mode);
+    if (mode === 'logo') {
+      if (reduced) writeLogo(fold.steps);
+      else {
+        // 開場：先停在方紙，再一摺一摺摺出 logo
+        writeLogo(0);
+        plan = [
+          { kind: 'logo', from: 0, to: 0, dur: 0.5 },
+          { kind: 'logo', from: 0, to: fold.steps, dur: fold.steps * LOGO_STEP_S },
+        ];
+        segStart = -1;
+      }
+    }
+
     const clock = new THREE.Clock();
     let raf = 0;
 
@@ -317,13 +369,15 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
       for (let f = 0; f < FACES; f++) {
         const delay = (f / FACES) * STAGGER;
         const e = easeInOut(THREE.MathUtils.clamp((k - delay) / (1 - STAGGER), 0, 1));
-        // 摺的途中往鏡頭方向掀起，像紙片被翻過去
+        // 變形途中往鏡頭方向掀起，像紙片被翻過去
         const arc = Math.sin(e * Math.PI) * 0.35 * liftDir;
         for (let j = 0; j < 9; j++) {
           const i = f * 9 + j;
           positions[i] = a[i] + (b[i] - a[i]) * e + (j % 3 === 2 ? arc : 0);
         }
       }
+      geo.attributes.position.needsUpdate = true;
+      geo.computeVertexNormals();
     };
 
     const tick = () => {
@@ -336,26 +390,34 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
 
       if (targetRef.current !== shown) {
         shown = targetRef.current;
-        from = new Float32Array(positions);
-        to = models[shown];
-        start = t;
+        if (reduced) {
+          plan = [];
+          if (shown === LOGO) {
+            setMode('logo');
+            writeLogo(fold.steps);
+          } else {
+            setMode('tri');
+            positions.set(models[shown]);
+            geo.attributes.position.needsUpdate = true;
+            geo.computeVertexNormals();
+          }
+        } else replan();
       }
 
-      if (start >= 0) {
-        const local = t - start;
-        if (reduced) {
-          positions.set(to);
-          start = -1;
-        } else if (local < UNFOLD_S) {
-          writeBlend(from, sheet, local / UNFOLD_S, 1);
-        } else if (local < UNFOLD_S + FOLD_S) {
-          writeBlend(sheet, to, (local - UNFOLD_S) / FOLD_S, -1);
+      while (plan.length) {
+        const seg = plan[0];
+        if (segStart < 0) segStart = t;
+        const k = seg.dur > 0 ? Math.min(1, (t - segStart) / seg.dur) : 1;
+        if (seg.kind === 'logo') {
+          if (mode !== 'logo') setMode('logo');
+          writeLogo(seg.from + (seg.to - seg.from) * k);
         } else {
-          positions.set(to);
-          start = -1;
+          if (mode !== 'tri') setMode('tri');
+          writeBlend(seg.a, seg.b, k, seg.lift);
         }
-        geo.attributes.position.needsUpdate = true;
-        geo.computeVertexNormals();
+        if (k < 1) break;
+        plan.shift();
+        segStart = -1;
       }
 
       const [poseY, poseX] = POSES[ORIGAMI_MODELS[shown].key];
@@ -373,6 +435,7 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
       ro.disconnect();
       window.removeEventListener('pointermove', onMove);
       geo.dispose();
+      logoGeo.dispose();
       mat.dispose();
       ground.geometry.dispose();
       (ground.material as THREE.Material).dispose();

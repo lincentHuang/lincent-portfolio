@@ -90,7 +90,7 @@ export const HeroSection: React.FC = () => {
             </div>
 
             <p className="absolute right-7 top-[72px] z-20 hidden sm:block text-[12px] text-slate-500 pointer-events-none">
-              {lang === 'zh' ? '點一下紙，摺成下一個' : 'Tap the paper to fold the next one'}
+              {lang === 'zh' ? '點一下紙，換下一個造型' : 'Tap the paper for the next shape'}
             </p>
 
             {/* Booking */}

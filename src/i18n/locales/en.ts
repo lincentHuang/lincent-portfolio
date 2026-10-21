@@ -50,11 +50,12 @@ export const en = {
     expandStory: 'Read the details',
     collapseStory: 'Collapse',
     fullCase: 'Full case study',
+    visitSite: 'Visit site',
   },
   contact: {
     tag: 'Contact',
     titlePrefix: 'Got an idea?',
-    titleItalic: "Let's fold it into something real",
+    titleItalic: "Let's make it real",
     subtitle: 'Share a few details about your team, project, or role, and I will get back with a clear direction within 24 hours.',
     emailLabel: 'Email Address *',
     nameLabel: 'Your Name *',
