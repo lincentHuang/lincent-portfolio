@@ -3,12 +3,12 @@
 import React from 'react';
 import * as THREE from 'three';
 import { ORIGAMI_MODELS, type OrigamiKey } from './origami-models';
-import { buildFold } from './origami-fold-sim';
+import { buildFold, buildShape } from './origami-fold-sim';
 import { FOLD_MODELS } from './origami-fold-models';
 
 /**
- * 首頁 hero 的 Three.js 摺紙：logo、紙鶴、紙船、紙飛機都從同一張正黑背白的方紙，
- * 照真實步驟一摺一摺完成（摺法見 origami-fold-models.ts）。
+ * 首頁 hero 的 Three.js 摺紙：logo、紙鶴、紙船、紙飛機都從同一張正黑背白的方紙開始，
+ * logo 與紙飛機照真實步驟一摺一摺完成，紙鶴與紙船從方紙變形成完成造型（見 origami-fold-models.ts）。
  * 切換時先把目前的造型攤回方紙，再摺成下一個；開場也會從方紙摺一次。
  * 偏好減少動態時直接切換、不播摺紙過程。
  */
@@ -82,15 +82,18 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
         .replace('uniform vec3 diffuse;', 'uniform vec3 diffuse;\nuniform vec3 uBack;')
         .replace('vec4 diffuseColor = vec4( diffuse, opacity );', 'vec4 diffuseColor = vec4( gl_FrontFacing ? diffuse : uBack, opacity );');
     };
+    // 兩面同色的紙（紙鶴）
+    const solidMat = new THREE.MeshStandardMaterial({ color: front, roughness: 0.85, metalness: 0, side: THREE.DoubleSide, flatShading: true });
 
     const group = new THREE.Group();
     scene.add(group);
     const papers = ORIGAMI_MODELS.map((m) => {
-      const sim = buildFold(FOLD_MODELS[m.key], SHEET_SIZE);
+      const def = FOLD_MODELS[m.key];
+      const sim = 'steps' in def ? buildFold(def, SHEET_SIZE) : buildShape(def, SHEET_SIZE);
       const positions = new Float32Array(sim.triangles * 9);
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const mesh = new THREE.Mesh(geo, mat);
+      const mesh = new THREE.Mesh(geo, 'solid' in def && def.solid ? solidMat : mat);
       mesh.castShadow = true;
       mesh.visible = false;
       group.add(mesh);
@@ -194,6 +197,7 @@ export function OrigamiFold3D({ className, index, onClick, front = '#2a2a33', ba
       window.removeEventListener('pointermove', onMove);
       papers.forEach((p) => p.geo.dispose());
       mat.dispose();
+      solidMat.dispose();
       ground.geometry.dispose();
       (ground.material as THREE.Material).dispose();
       renderer.dispose();

@@ -221,3 +221,78 @@ export function buildFold(model: FoldModel, sheetSize: number): FoldSim {
 
   return { steps: n, triangles, write };
 }
+
+/**
+ * 造型模型：不照真實摺法，直接定義完成時的 3D 造型。
+ * 每個頂點同時有「在方紙上的位置」與「完成後的位置」，三角面共用頂點，
+ * 變形時紙面連在一起、不會碎開：方紙 → 壓平的側面輪廓 → 立體完成品。
+ */
+export type ShapeVert = {
+  /** 在攤平方紙上的位置（菱形座標，四角為 (±1,0)、(0,±1)，建構時轉成正方形） */
+  flat: [number, number];
+  pos: [number, number, number];
+  /** 攤平時藏在紙後面（例如之後才長出來的帆） */
+  hidden?: boolean;
+};
+
+export type ShapeModel = {
+  verts: ShapeVert[];
+  /** 頂點索引，攤平時為逆時針（正面朝鏡頭） */
+  tris: [number, number, number][];
+  size: number;
+  /** 兩面都用正面顏色（看不到紙背） */
+  solid?: boolean;
+};
+
+/** 方紙 → 壓平輪廓 → 完成品，各佔兩步 */
+const SHAPE_STEPS = 4;
+/** 壓平輪廓時保留的厚度比例 */
+const SQUASH = 0.14;
+
+export function buildShape(model: ShapeModel, sheetSize: number): FoldSim {
+  const n = model.verts.length;
+  const keys = [0, 1, 2].map(() => new Float32Array(n * 3));
+  const dist = new Float32Array(n);
+  model.verts.forEach((v, i) => {
+    const [u, w] = v.flat;
+    keys[0].set([u - w, u + w, v.hidden ? -0.02 : 0], i * 3);
+    keys[1].set([v.pos[0], v.pos[1], v.pos[2] * SQUASH], i * 3);
+    keys[2].set(v.pos, i * 3);
+    dist[i] = Math.min(1, Math.hypot(u, w));
+  });
+
+  const frames = keys.map((k) => {
+    const box = new THREE.Box3();
+    for (let i = 0; i < n; i++) box.expandByPoint(new THREE.Vector3(k[i * 3], k[i * 3 + 1], k[i * 3 + 2]));
+    const size = Math.max(box.max.x - box.min.x, box.max.y - box.min.y);
+    return { box, size };
+  });
+  const base = model.size / frames[2].size;
+  const fit = frames.map(({ box, size }) => ({
+    c: box.getCenter(new THREE.Vector3()),
+    s: Math.min(base, sheetSize / size),
+  }));
+
+  const pos = new Float32Array(n * 3);
+  const write = (F: number, out: Float32Array) => {
+    const seg = F < SHAPE_STEPS / 2 ? 0 : 1;
+    const t = THREE.MathUtils.clamp((F - seg * (SHAPE_STEPS / 2)) / (SHAPE_STEPS / 2), 0, 1);
+    const a = keys[seg];
+    const b = keys[seg + 1];
+    const et = easeInOut(t);
+    const c = fit[seg].c.clone().lerp(fit[seg + 1].c, et);
+    const s = fit[seg].s + (fit[seg + 1].s - fit[seg].s) * et;
+    for (let i = 0; i < n; i++) {
+      // 外圍晚一點動，像從中間往外收攏
+      const e = easeInOut(THREE.MathUtils.clamp((t - dist[i] * 0.25) / 0.75, 0, 1));
+      for (let j = 0; j < 3; j++) {
+        const k = i * 3 + j;
+        pos[k] = (a[k] + (b[k] - a[k]) * e - c.getComponent(j)) * s;
+      }
+    }
+    let o = 0;
+    for (const tri of model.tris) for (const i of tri) for (let j = 0; j < 3; j++) out[o++] = pos[i * 3 + j];
+  };
+
+  return { steps: SHAPE_STEPS, triangles: model.tris.length, write };
+}

@@ -50,3 +50,4 @@
 - 2026-10-21：文案拿掉「摺」的比喻（hero 改「做成簡單好用的產品」／Turning complex needs、聯繫區「一起把它做出來」、摺紙提示改「點一下紙，換下一個造型」）；hero 的 logo 改為真實摺紙：正黑背白方紙依序往後對摺兩次成長條、摺上端與斜角、下端斜摺轉出腳、尾端往後摺成三角形、最後掀起三角，開場也會播一次；只改本機內容，正式站 R2 尚未同步（origami-logo-fold.ts、origami-fold-3d.tsx、hero-section.tsx、default-site.ts、data/content/content.json、i18n zh/en）
 - 2026-10-21：首頁 hero 新文案同步正式站 R2（寫入前備份 content/content.backup-1792595400063.json），程式碼推上 main 觸發 Vercel 部署
 - 2026-10-22：hero 摺紙全部改為真實摺紙步驟：抽出通用摺紙模擬（沿摺線整片翻動、多層一起摺、反摺、部分張開），紙鶴（風箏摺→細菱形→對摺→反摺脖子、尾巴、頭→張開翅膀）、紙船（摺起船身→摺出黑白兩片帆→船身兩端摺斜→摺出底座站立）、紙飛機（經典尖頭機）都從同一張方紙摺出；切換時先攤回方紙再摺下一個，移除舊的三角面變形（origami-fold-sim.ts、origami-fold-models.ts、origami-fold-3d.tsx）
+- 2026-10-22：紙鶴、紙船改為不照摺法、直接做出跟真的一樣的完成造型（傳統紙鶴：頭尾上翹、翅膀從背上張開、兩面同色；傳統報紙船：上寬下窄船身加中間三角帆、船艙內側白色），從方紙經壓平輪廓變形成立體造型，紙面共用頂點不會碎開；logo 與紙飛機維持真實摺法（origami-fold-sim.ts 新增 buildShape、origami-fold-models.ts、origami-fold-3d.tsx）
