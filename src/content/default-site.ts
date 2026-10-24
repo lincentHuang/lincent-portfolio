@@ -554,6 +554,33 @@ export const defaultSiteContent: SiteContent = {
     ],
   },
 
+  links: {
+    avatar: '',
+    avatarShape: 'circle',
+    background: { type: 'paper', color: '#F2F3F5', color2: '#C7D2FE', image: '', dim: 30, tone: 'light' },
+    title: { zh: '', en: '' },
+    bio: { zh: '', en: '' },
+    items: [
+      {
+        id: 'link-portfolio',
+        kind: 'custom',
+        enabled: true,
+        url: '/',
+        label: { zh: '完整作品集', en: 'Full portfolio' },
+        desc: { zh: '所有作品與經歷', en: 'All projects and experience' },
+        highlight: true,
+      },
+      {
+        id: 'link-contact',
+        kind: 'custom',
+        enabled: true,
+        url: '/contact',
+        label: { zh: '聯繫我', en: 'Get in touch' },
+      },
+    ],
+    showSocials: true,
+  },
+
   sections: {
     benefits: true,
     projects: true,

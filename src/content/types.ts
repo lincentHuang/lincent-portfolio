@@ -128,6 +128,52 @@ export interface AboutContent {
   preferences: { label: L; value: L }[];
 }
 
+/**
+ * 入口頁（/links）的一個按鈕：
+ * - project：引用作品，標題與封面跟著作品走，改作品這裡自動更新
+ * - custom：自訂連結（社群、表單、文章…）
+ */
+export interface LinkItem {
+  id: string;
+  kind: 'project' | 'custom';
+  enabled: boolean;
+  projectId?: string;
+  /** 作品按鈕要連去哪：作品介紹頁或線上網站（沒有 demoUrl 時退回介紹頁） */
+  target?: 'case' | 'demo';
+  /** 自訂連結網址 */
+  url?: string;
+  /** 自訂連結必填；作品按鈕留空就用作品標題 */
+  label?: L;
+  /** 按鈕下方小字；作品按鈕留空就用作品副標 */
+  desc?: L;
+  /** 醒目樣式（深色、較大） */
+  highlight?: boolean;
+}
+
+export interface LinksBackground {
+  /** paper：與首頁一致的灰白紙面；color：純色；gradient：兩色漸層；image：背景圖 */
+  type: 'paper' | 'color' | 'gradient' | 'image';
+  color: string;
+  color2: string;
+  image: string;
+  /** 背景圖上加一層暗化，讓文字讀得清楚（0–80） */
+  dim: number;
+  /** 背景深時改用白字 */
+  tone: 'light' | 'dark';
+}
+
+export interface LinksPage {
+  /** 頭像；留空沿用個人資料大頭照 */
+  avatar: string;
+  avatarShape: 'circle' | 'rounded';
+  background: LinksBackground;
+  title: L;
+  bio: L;
+  items: LinkItem[];
+  /** 是否在最下方顯示 Email / GitHub / LinkedIn 小圖示 */
+  showSocials: boolean;
+}
+
 export type SectionKey =
   | 'benefits'
   | 'projects'
@@ -149,6 +195,8 @@ export interface SiteContent {
   testimonials: SectionHeader & { items: Testimonial[] };
   experience: SectionHeader & { items: ExperienceItem[] };
   about: AboutContent;
+  /** 入口頁 /links（類似 Linktree） */
+  links: LinksPage;
   /** 首頁各區塊顯示開關 */
   sections: Record<SectionKey, boolean>;
 }

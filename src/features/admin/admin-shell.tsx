@@ -16,6 +16,7 @@ import {
   Loader2,
   Menu,
   X,
+  Link2,
 } from 'lucide-react';
 import { adminApi } from './shared/api';
 import { MediaLibraryProvider } from './shared/media';
@@ -28,6 +29,7 @@ import { ProjectsManager } from './sections/projects-manager';
 import { MediaLibrary } from './sections/media-library';
 import { InquiriesInbox } from './sections/inquiries-inbox';
 import { Overview } from './sections/overview';
+import { LinksEditor } from './sections/links-editor';
 
 // 導覽順序對應前台：先網站內容（由上而下），再作品、媒體、詢問
 export const ADMIN_TABS = [
@@ -36,13 +38,14 @@ export const ADMIN_TABS = [
   { key: 'home', label: '首頁區塊', icon: Home, group: '網站內容', preview: '/' },
   { key: 'experience', label: '工作經歷', icon: Briefcase, group: '網站內容', preview: '/#experience' },
   { key: 'about', label: '關於我頁面', icon: BookUser, group: '網站內容', preview: '/about' },
+  { key: 'links', label: '入口頁', icon: Link2, group: '網站內容', preview: '/links' },
   { key: 'projects', label: '作品管理', icon: FolderKanban, group: '作品集', preview: '/projects' },
   { key: 'media', label: '媒體庫', icon: Images, group: '素材' },
   { key: 'inquiries', label: '詢問信箱', icon: Inbox, group: '聯絡' },
 ] as const;
 
 export type AdminTab = (typeof ADMIN_TABS)[number]['key'];
-const SITE_TABS: AdminTab[] = ['profile', 'home', 'experience', 'about'];
+const SITE_TABS: AdminTab[] = ['profile', 'home', 'experience', 'about', 'links'];
 
 export function AdminShell() {
   const [auth, setAuth] = useState<'checking' | 'in' | 'out'>('checking');
@@ -203,6 +206,7 @@ function AdminLayout({ passwordConfigured, onLogout }: { passwordConfigured: boo
             {tab === 'home' && <HomeEditor />}
             {tab === 'experience' && <ExperienceEditor />}
             {tab === 'about' && <AboutEditor />}
+            {tab === 'links' && <LinksEditor />}
             {tab === 'projects' && <ProjectsManager />}
             {tab === 'media' && <MediaLibrary />}
             {tab === 'inquiries' && <InquiriesInbox />}
